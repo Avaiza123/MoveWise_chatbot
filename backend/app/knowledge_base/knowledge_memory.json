@@ -1,0 +1,626 @@
+[
+  {
+    "key": "fitness::elbow position in bench press",
+    "question": "Elbow position in bench press",
+    "answer": "For bench press elbow position, use this setup:\n\n\u2022 Keep elbows about 45 to 75 degrees from your torso (not fully flared at 90)\n\u2022 Wrists stacked over elbows at the bottom position\n\u2022 Forearms mostly vertical when the bar touches lower chest/sternum area\n\u2022 Tuck slightly on the way down, then press up and slightly back\n\u2022 Keep shoulder blades retracted and down to protect shoulders\n\nCommon mistakes:\n\u2022 Elbows too wide (shoulder stress)\n\u2022 Elbows too tucked (triceps-dominant, unstable bar path)\n\u2022 Bouncing bar off chest\n\nCue: 'Stack wrist-elbow, touch low chest, press back toward eyes.'",
+    "source": "local",
+    "confidence": 0.5443103448275862,
+    "tags": [
+      "fitness",
+      "bench_press",
+      "elbow_position"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777030291.6721318
+  },
+  {
+    "key": "food::how many calories in chicken breast?",
+    "question": "How many calories in chicken breast?",
+    "answer": "**Chicken Breast Nutrition Info**\n\n**Category:** Protein\n**Serving Size:** 100g (cooked)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 165\n\u2022 Protein: 31g\n\u2022 Carbs: 0g\n\u2022 Fat: 3.6g\n\u2022 Fiber: 0g\n\n**Benefits:**\n\u2022 Lean protein\n\u2022 Low fat\n\u2022 Versatile\n\u2022 Muscle building\n\u2022 High satiety\n\n**Preparation:** Grill, bake, or boil",
+    "source": "local",
+    "confidence": 0.92,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777030291.6994581
+  },
+  {
+    "key": "fitness::squat depth requirements",
+    "question": "Squat depth requirements",
+    "answer": "For squat depth, use this practical standard:\n\n\u2022 General goal: descend until hip crease is at or slightly below top of knee\n\u2022 Keep full-foot pressure (big toe, little toe, heel) to avoid collapsing forward\n\u2022 Knees track over toes; avoid cave-in\n\u2022 Maintain neutral spine and brace before each rep\n\u2022 Depth should be pain-free and controlled with stable bar path\n\nIf you cannot hit depth yet, improve these first:\n\u2022 Ankle dorsiflexion mobility\n\u2022 Hip external rotation control\n\u2022 Core bracing and tempo (3-second eccentric)\n\nUseful progression: goblet squat to box, then gradually lower box height.",
+    "source": "local",
+    "confidence": 0.7633333333333332,
+    "tags": [
+      "fitness",
+      "squat",
+      "depth_requirements"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777030291.7242823
+  },
+  {
+    "key": "fitness::signs you need a deload",
+    "question": "Signs you need a deload",
+    "answer": "Common signs you likely need a deload:\n\n\u2022 Performance stalls or drops for 2+ weeks\n\u2022 Usual weights feel unusually heavy (high RPE)\n\u2022 Persistent joint/tendon soreness\n\u2022 Poor sleep, low motivation, irritability\n\u2022 Elevated resting heart rate and poor recovery between sessions\n\nDeload approach (7 days):\n\u2022 Reduce load to ~60-70% or cut volume by 40-50%\n\u2022 Keep movement patterns but avoid failure\n\u2022 Prioritize sleep, hydration, and steps",
+    "source": "local",
+    "confidence": 0.445,
+    "tags": [
+      "fitness",
+      "deload_signs"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777030534.720453
+  },
+  {
+    "key": "diet::metabolic adaptation to dieting",
+    "question": "Metabolic adaptation to dieting",
+    "answer": "Metabolic adaptation is your body's response to prolonged calorie deficit:\n\n\u2022 Resting energy expenditure can drop\n\u2022 Non-exercise activity often decreases subconsciously\n\u2022 Hunger can increase while satiety drops\n\u2022 Training output may decline over time\n\nHow to manage it:\n\u2022 Use moderate deficits, not aggressive crashes\n\u2022 Keep protein high and resistance training consistent\n\u2022 Include diet breaks/refeed periods when needed\n\u2022 Sleep 7-9 hours and manage stress\n\u2022 Transition out with reverse dieting after long cuts",
+    "source": "local",
+    "confidence": 0.455,
+    "tags": [
+      "diet",
+      "metabolic_adaptation"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777030534.760802
+  },
+  {
+    "key": "diet::coming out of a diet without gaining fat",
+    "question": "Coming out of a diet without gaining fat",
+    "answer": "To come out of a diet without rapid fat gain, use a reverse-diet transition:\n\n\u2022 Increase calories gradually (about 80-150 kcal/week)\n\u2022 Keep protein high (~1.6-2.2 g/kg body weight)\n\u2022 Add carbs first to support training and recovery\n\u2022 Hold body weight gain to ~0.1-0.25% per week\n\u2022 Keep lifting performance trending up\n\u2022 Keep daily steps/cardio stable for 2-3 weeks before reducing\n\nUse waist + scale trend + gym performance to adjust each week.",
+    "source": "local",
+    "confidence": 0.6799999999999999,
+    "tags": [
+      "diet",
+      "reverse_diet"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777030534.795517
+  },
+  {
+    "key": "fitness::how to engage lats in pull-ups",
+    "question": "How to engage lats in pull-ups",
+    "answer": "To engage lats better in pull-ups, use these cues:\n\n\u2022 Start from an active hang: depress shoulders (pull shoulder blades down) before bending elbows\n\u2022 Think 'drive elbows to your back pockets' instead of pulling with hands\n\u2022 Keep ribs down and slight hollow-body tension to avoid swinging\n\u2022 Use a shoulder-width or just-wider grip; very wide grips often reduce quality ROM\n\u2022 Pause 1 second at the top and lower with control for 2-3 seconds\n\nDrills to improve lat activation:\n\u2022 Scap pull-ups (2-3 sets of 8-12)\n\u2022 Straight-arm pulldowns\n\u2022 Chest-supported rows with elbow path close to torso",
+    "source": "local",
+    "confidence": 0.43357142857142855,
+    "tags": [
+      "fitness",
+      "pull_ups",
+      "lat_engagement"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777030534.9082327
+  },
+  {
+    "key": "food::what are high protein foods",
+    "question": "what are high protein foods",
+    "answer": "**High Protein Foods:**\n\u2022 Chicken breast\n\u2022 Salmon\n\u2022 Eggs\n\u2022 Greek yogurt\n\u2022 Lentils\n\u2022 Chickpeas\n\u2022 Tuna canned\n\u2022 Cottage cheese\n\u2022 Sardines\n\u2022 Beef lean\n\u2022 Tofu\n\u2022 Edamame",
+    "source": "local",
+    "confidence": 0.92,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777031407.4232616
+  },
+  {
+    "key": "diet::what should i eat for weight loss?",
+    "question": "What should I eat for weight loss?",
+    "answer": "**Weight Loss Diet Strategy**\n\n**Strategy:** Calorie deficit of 300-500 calories below maintenance (lose 0.5-1 lb per week)\n\n**Key Approaches:**\n\u2022 Track calories or use portion control (apps: MyFitnessPal, Cronometer)\n\u2022 Increase protein intake to 1.0-1.2g per pound (keeps you full, preserves muscle)\n\u2022 Prioritize whole foods (higher volume, lower calorie density)\n\u2022 Reduce processed foods and sugar\n\u2022 Stay hydrated (water before meals reduces intake)\n\u2022 Include regular exercise (NEAT matters: walk more)\n\u2022 Get adequate sleep (poor sleep increases hunger hormones)\n\u2022 Eat slowly and mindfully (takes 20 min for fullness signal)\n\n**Foods to Limit:**\n\u2022 Sugary drinks (soda, juice, sweetened coffee)\n\u2022 Processed snacks (chips, cookies)\n\u2022 High-calorie oils (heavy dressings)\n\u2022 Alcohol (7 cal/g, impairs judgment)\n\u2022 Refined carbs (white bread, pastries)\n\n**Foods to Emphasize:**\n\u2022 Lean proteins (chicken, fish, tofu, legumes)\n\u2022 Non-starchy vegetables (broccoli, spinach, peppers, cauliflower)\n\u2022 Whole grains (oats, quinoa, brown rice)\n\u2022 Fruits (berries, apples, citrus - whole fruit, not juice)\n\u2022 Legumes (beans, lentils - high satiety)",
+    "source": "local",
+    "confidence": 0.5638506249672457,
+    "tags": [
+      "diet"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777033031.167216
+  },
+  {
+    "key": "health::how to manage stress?",
+    "question": "How to manage stress?",
+    "answer": "Stress can affect your body, sleep, mood, and recovery.\n\nA simple way to start: 4-7-8 breathing: Inhale for 4 counts, hold for 7, exhale for 8\n\nOther things that help:\n\u2022 Regular exercise (releases endorphins)\n\u2022 Meditation and mindfulness\n\u2022 Deep breathing exercises\n\u2022 Yoga\n\u2022 Time in nature\n\u2022 Social connections\n\u2022 Hobbies and leisure activities",
+    "source": "local",
+    "confidence": 0.8500000000000001,
+    "tags": [
+      "health"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777033037.5564966
+  },
+  {
+    "key": "fitness::what muscles does push-ups work?",
+    "question": "What muscles does push-ups work?",
+    "answer": "Muscle Building Strategy:\n\u2022 Strategy: Progressive strength training with adequate nutrition\n\u2022 Weekly Routine:\n  - 4-5 strength training sessions\n  - 1-2 light cardio sessions\n\u2022 Key Points:\n  - Focus on compound exercises\n  - Progressive overload is crucial\n  - Eat in calorie surplus",
+    "source": "local",
+    "confidence": 0.2583333333333333,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "fitness",
+    "updated_at": 1777036366.994415
+  },
+  {
+    "key": "fitness::how do i build muscle mass?",
+    "question": "How do I build muscle mass?",
+    "answer": "Muscle Building Strategy:\n\u2022 Strategy: Progressive strength training with adequate nutrition\n\u2022 Weekly Routine:\n  - 4-5 strength training sessions\n  - 1-2 light cardio sessions\n\u2022 Key Points:\n  - Focus on compound exercises\n  - Progressive overload is crucial\n  - Eat in calorie surplus",
+    "source": "local",
+    "confidence": 0.57375,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034698.5061755
+  },
+  {
+    "key": "fitness::how to break through a strength plateau?",
+    "question": "How to break through a strength plateau?",
+    "answer": "**Strength Training Guide**\n\nDescription: Exercises using weights or resistance to build muscle\n\n**Examples:** Weightlifting, Bodyweight exercises, Resistance bands, Dumbbells\n\n**Benefits:**\n\u2022 Builds muscle\n\u2022 Increases metabolism\n\u2022 Stronger bones\n\u2022 Improves posture\n\n**Duration:** 30-60 minutes\n**Frequency:** 3-4 times per week\n**Rest Days:** 48 hours between same muscle group training",
+    "source": "local",
+    "confidence": 0.6392857142857142,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034698.5277915
+  },
+  {
+    "key": "fitness::how to bench press safely?",
+    "question": "How to bench press safely?",
+    "answer": "**Bench Press Guide**\n\n**Muscles Targeted:** Pectoralis major, Triceps, Anterior deltoids\n**Difficulty:** Intermediate\n\n**How to Perform:**\nFeet planted, arch slight, bar to lower chest, press straight up\n\n**Sets & Reps:** 3-5 sets of 5-12 reps\n\n**Variations:**\n\u2022 Incline bench\n\u2022 Decline bench\n\u2022 Dumbbell bench\n\u2022 Close-grip (triceps focused)",
+    "source": "local",
+    "confidence": 0.5595454545454546,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034698.5538814
+  },
+  {
+    "key": "fitness::what's deload week and do i need it?",
+    "question": "What's deload week and do I need it?",
+    "answer": "Common signs you likely need a deload:\n\n\u2022 Performance stalls or drops for 2+ weeks\n\u2022 Usual weights feel unusually heavy (high RPE)\n\u2022 Persistent joint/tendon soreness\n\u2022 Poor sleep, low motivation, irritability\n\u2022 Elevated resting heart rate and poor recovery between sessions\n\nDeload approach (7 days):\n\u2022 Reduce load to ~60-70% or cut volume by 40-50%\n\u2022 Keep movement patterns but avoid failure\n\u2022 Prioritize sleep, hydration, and steps",
+    "source": "local",
+    "confidence": 0.4272222222222222,
+    "tags": [
+      "fitness",
+      "deload_signs"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034704.9224415
+  },
+  {
+    "key": "fitness::hiit vs steady state cardio - which is better?",
+    "question": "HIIT vs steady state cardio - which is better?",
+    "answer": "**Cardio Exercise Guide**\n\nDescription: Cardiovascular exercises that increase heart rate and improve endurance\n\n**Examples:** Running, Cycling, Swimming, Jump Rope, Rowing, Elliptical\n\n**Benefits:**\n\u2022 Burns calories\n\u2022 Improves heart health\n\u2022 Increases stamina\n\u2022 Reduces stress\n\n**Duration:** 20-60 minutes\n**Frequency:** 3-5 times per week\n\n**Beginner Tip:** Start with 20-30 minutes at moderate intensity",
+    "source": "local",
+    "confidence": 0.5363636363636364,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034704.9441276
+  },
+  {
+    "key": "fitness::apartment-friendly cardio exercises",
+    "question": "Apartment-friendly cardio exercises",
+    "answer": "**Cardio Exercise Guide**\n\nDescription: Cardiovascular exercises that increase heart rate and improve endurance\n\n**Examples:** Running, Cycling, Swimming, Jump Rope, Rowing, Elliptical\n\n**Benefits:**\n\u2022 Burns calories\n\u2022 Improves heart health\n\u2022 Increases stamina\n\u2022 Reduces stress\n\n**Duration:** 20-60 minutes\n**Frequency:** 3-5 times per week\n\n**Beginner Tip:** Start with 20-30 minutes at moderate intensity",
+    "source": "local",
+    "confidence": 0.32499999999999996,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "fitness",
+    "updated_at": 1777036371.511148
+  },
+  {
+    "key": "health::tips for better sleep quality",
+    "question": "Tips for better sleep quality",
+    "answer": "You usually need about 7-9 hours per night.\n\nWhy it matters: Sleep is crucial for recovery, immune function, and mental health\n\nHelpful sleep tips:\n\u2022 Maintain consistent sleep schedule\n\u2022 Keep bedroom dark and cool\n\u2022 Avoid screens 30 minutes before bed\n\u2022 Limit caffeine after 2 PM\n\u2022 Exercise regularly (but not before bed)\n\nSleep happens in light sleep, deep sleep, and REM sleep, and each stage helps recovery in a different way.",
+    "source": "local",
+    "confidence": 0.7857377049180327,
+    "tags": [
+      "health"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034707.1691132
+  },
+  {
+    "key": "health::how to fix my sleep schedule?",
+    "question": "How to fix my sleep schedule?",
+    "answer": "You usually need about 7-9 hours per night.\n\nWhy it matters: Sleep is crucial for recovery, immune function, and mental health\n\nHelpful sleep tips:\n\u2022 Maintain consistent sleep schedule\n\u2022 Keep bedroom dark and cool\n\u2022 Avoid screens 30 minutes before bed\n\u2022 Limit caffeine after 2 PM\n\u2022 Exercise regularly (but not before bed)\n\nSleep happens in light sleep, deep sleep, and REM sleep, and each stage helps recovery in a different way.",
+    "source": "local",
+    "confidence": 0.8666666666666667,
+    "tags": [
+      "health"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034708.2982454
+  },
+  {
+    "key": "health::how to reduce stress naturally?",
+    "question": "How to reduce stress naturally?",
+    "answer": "Stress can affect your body, sleep, mood, and recovery.\n\nA simple way to start: 4-7-8 breathing: Inhale for 4 counts, hold for 7, exhale for 8\n\nOther things that help:\n\u2022 Regular exercise (releases endorphins)\n\u2022 Meditation and mindfulness\n\u2022 Deep breathing exercises\n\u2022 Yoga\n\u2022 Time in nature\n\u2022 Social connections\n\u2022 Hobbies and leisure activities",
+    "source": "local",
+    "confidence": 0.445,
+    "tags": [
+      "health"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034708.3107328
+  },
+  {
+    "key": "diet::budget-friendly high protein meals",
+    "question": "Budget-friendly high protein meals",
+    "answer": "**Protein Guide**\n\n**Function:** Builds and repairs muscle, creates enzymes and hormones, supports immune function, maintains skin/hair/nails.\n\n**Daily Intake:** {'sedentary_adult': '0.36g per pound (0.8g per kg) of body weight', 'active_adult': '0.8-1.0g per pound (1.6-2.2g per kg)', 'bodybuilder/athlete': '1.0-1.2g per pound (2.2-2.6g per kg)', 'weight_loss': '1.0-1.2g per pound to preserve muscle', 'older_adults': '1.0-1.2g per pound to prevent sarcopenia'}\n\n**Best Sources:**\n\u2022 Chicken\n\u2022 Fish\n\u2022 Eggs\n\u2022 Beans\n\u2022 Greek yogurt\n\u2022 Cottage cheese\n\u2022 Nuts\n\u2022 Tofu\n\u2022 Tempeh\n\u2022 Seitan\n\u2022 Lean beef\n\u2022 Turkey\n\u2022 Lentils\n\u2022 Edamame\n\u2022 Quinoa\n\n**Timing Tip:** Distribute throughout day, 20-40g per meal for optimal muscle protein synthesis (MPS). Post-workout window is valuable but total daily intake matters most.",
+    "source": "local",
+    "confidence": 0.265,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1777036379.0817542
+  },
+  {
+    "key": "diet::is whey protein necessary?",
+    "question": "Is whey protein necessary?",
+    "answer": "**Protein Guide**\n\n**Function:** Builds and repairs muscle, creates enzymes and hormones, supports immune function, maintains skin/hair/nails.\n\n**Daily Intake:** {'sedentary_adult': '0.36g per pound (0.8g per kg) of body weight', 'active_adult': '0.8-1.0g per pound (1.6-2.2g per kg)', 'bodybuilder/athlete': '1.0-1.2g per pound (2.2-2.6g per kg)', 'weight_loss': '1.0-1.2g per pound to preserve muscle', 'older_adults': '1.0-1.2g per pound to prevent sarcopenia'}\n\n**Best Sources:**\n\u2022 Chicken\n\u2022 Fish\n\u2022 Eggs\n\u2022 Beans\n\u2022 Greek yogurt\n\u2022 Cottage cheese\n\u2022 Nuts\n\u2022 Tofu\n\u2022 Tempeh\n\u2022 Seitan\n\u2022 Lean beef\n\u2022 Turkey\n\u2022 Lentils\n\u2022 Edamame\n\u2022 Quinoa\n\n**Timing Tip:** Distribute throughout day, 20-40g per meal for optimal muscle protein synthesis (MPS). Post-workout window is valuable but total daily intake matters most.",
+    "source": "local",
+    "confidence": 0.4255555555555555,
+    "tags": [
+      "diet"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034719.2831507
+  },
+  {
+    "key": "diet::do fat burners work?",
+    "question": "Do fat burners work?",
+    "answer": "**Fat Guide**\n\n**Function:** Supports hormone production (testosterone, estrogen), nutrient absorption (A,D,E,K), brain function (60% of brain is fat), cell membrane integrity, insulation.\n\n**Daily Intake:** 20-35% of total calories (minimum 0.3-0.4g per pound for hormone health)\n\n**Healthy Fat Sources:**\n\u2022 Avocado\n\u2022 Olive oil\n\u2022 Nuts\n\u2022 Fatty fish\n\u2022 Seeds\n\u2022 Nut butters\n\u2022 Dark chocolate (70%+ cocoa)\n\n**Important:** Avoid entirely (except naturally occurring in small amounts in meat/dairy)",
+    "source": "local",
+    "confidence": 0.27499999999999997,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1777036379.1242306
+  },
+  {
+    "key": "food::nutrition facts of avocado",
+    "question": "Nutrition facts of avocado",
+    "answer": "**Almonds Nutrition Info**\n\n**Category:** Fat + Protein\n**Serving Size:** 23 almonds (28g)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 164\n\u2022 Protein: 6g\n\u2022 Carbs: 6g\n\u2022 Fat: 14g\n\u2022 Fiber: 3.5g\n\n**Benefits:**\n\u2022 Magnesium\n\u2022 Vitamin E (antioxidant)\n\u2022 Heart health\n\u2022 Blood sugar control\n\u2022 Healthy skin\n\n**Preparation:** Raw, roasted, or soaked",
+    "source": "local",
+    "confidence": 0.8049999999999999,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034720.2775705
+  },
+  {
+    "key": "diet::is salmon healthy? how much fat?",
+    "question": "Is salmon healthy? How much fat?",
+    "answer": "**Fat Guide**\n\n**Function:** Supports hormone production (testosterone, estrogen), nutrient absorption (A,D,E,K), brain function (60% of brain is fat), cell membrane integrity, insulation.\n\n**Daily Intake:** 20-35% of total calories (minimum 0.3-0.4g per pound for hormone health)\n\n**Healthy Fat Sources:**\n\u2022 Avocado\n\u2022 Olive oil\n\u2022 Nuts\n\u2022 Fatty fish\n\u2022 Seeds\n\u2022 Nut butters\n\u2022 Dark chocolate (70%+ cocoa)\n\n**Important:** Avoid entirely (except naturally occurring in small amounts in meat/dairy)",
+    "source": "local",
+    "confidence": 0.3383333333333334,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1777036379.1874044
+  },
+  {
+    "key": "food::benefits of eating broccoli",
+    "question": "Benefits of eating broccoli",
+    "answer": "**Broccoli Nutrition Info**\n\n**Category:** Vegetable\n**Serving Size:** 100g (raw)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 34\n\u2022 Protein: 2.8g\n\u2022 Carbs: 7g\n\u2022 Fat: 0.4g\n\u2022 Fiber: 2.4g\n\n**Benefits:**\n\u2022 Vitamin C (high)\n\u2022 Sulforaphane (cancer fighter)\n\u2022 Low calorie\n\u2022 Bone health\n\u2022 Immune support\n\n**Preparation:** Steam, roast, or eat raw",
+    "source": "local",
+    "confidence": 0.35500000000000004,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034720.3450236
+  },
+  {
+    "key": "food::is quinoa better than rice?",
+    "question": "Is quinoa better than rice?",
+    "answer": "**Brown Rice Nutrition Info**\n\n**Category:** Carbohydrate\n**Serving Size:** 100g (cooked)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 111\n\u2022 Protein: 2.6g\n\u2022 Carbs: 23g\n\u2022 Fat: 0.9g\n\u2022 Fiber: 1.8g\n\n**Benefits:**\n\u2022 B vitamins\n\u2022 Sustained energy\n\u2022 Gluten-free\n\u2022 Fiber\n\u2022 Magnesium\n\n**Preparation:** Boil for 45 minutes",
+    "source": "local",
+    "confidence": 0.53,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034720.3559952
+  },
+  {
+    "key": "diet::is peanut butter good for weight loss?",
+    "question": "Is peanut butter good for weight loss?",
+    "answer": "**Weight Loss Diet Strategy**\n\n**Strategy:** Calorie deficit of 300-500 calories below maintenance (lose 0.5-1 lb per week)\n\n**Key Approaches:**\n\u2022 Track calories or use portion control (apps: MyFitnessPal, Cronometer)\n\u2022 Increase protein intake to 1.0-1.2g per pound (keeps you full, preserves muscle)\n\u2022 Prioritize whole foods (higher volume, lower calorie density)\n\u2022 Reduce processed foods and sugar\n\u2022 Stay hydrated (water before meals reduces intake)\n\u2022 Include regular exercise (NEAT matters: walk more)\n\u2022 Get adequate sleep (poor sleep increases hunger hormones)\n\u2022 Eat slowly and mindfully (takes 20 min for fullness signal)\n\n**Foods to Limit:**\n\u2022 Sugary drinks (soda, juice, sweetened coffee)\n\u2022 Processed snacks (chips, cookies)\n\u2022 High-calorie oils (heavy dressings)\n\u2022 Alcohol (7 cal/g, impairs judgment)\n\u2022 Refined carbs (white bread, pastries)\n\n**Foods to Emphasize:**\n\u2022 Lean proteins (chicken, fish, tofu, legumes)\n\u2022 Non-starchy vegetables (broccoli, spinach, peppers, cauliflower)\n\u2022 Whole grains (oats, quinoa, brown rice)\n\u2022 Fruits (berries, apples, citrus - whole fruit, not juice)\n\u2022 Legumes (beans, lentils - high satiety)",
+    "source": "local",
+    "confidence": 0.47207142857142853,
+    "tags": [
+      "diet"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034720.3690348
+  },
+  {
+    "key": "food::healthy chicken breast recipes",
+    "question": "Healthy chicken breast recipes",
+    "answer": "**Chicken Breast Nutrition Info**\n\n**Category:** Protein\n**Serving Size:** 100g (cooked)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 165\n\u2022 Protein: 31g\n\u2022 Carbs: 0g\n\u2022 Fat: 3.6g\n\u2022 Fiber: 0g\n\n**Benefits:**\n\u2022 Lean protein\n\u2022 Low fat\n\u2022 Versatile\n\u2022 Muscle building\n\u2022 High satiety\n\n**Preparation:** Grill, bake, or boil",
+    "source": "local",
+    "confidence": 0.92,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034720.3774734
+  },
+  {
+    "key": "diet::quick vegetarian protein meals",
+    "question": "Quick vegetarian protein meals",
+    "answer": "**Protein Guide**\n\n**Function:** Builds and repairs muscle, creates enzymes and hormones, supports immune function, maintains skin/hair/nails.\n\n**Daily Intake:** {'sedentary_adult': '0.36g per pound (0.8g per kg) of body weight', 'active_adult': '0.8-1.0g per pound (1.6-2.2g per kg)', 'bodybuilder/athlete': '1.0-1.2g per pound (2.2-2.6g per kg)', 'weight_loss': '1.0-1.2g per pound to preserve muscle', 'older_adults': '1.0-1.2g per pound to prevent sarcopenia'}\n\n**Best Sources:**\n\u2022 Chicken\n\u2022 Fish\n\u2022 Eggs\n\u2022 Beans\n\u2022 Greek yogurt\n\u2022 Cottage cheese\n\u2022 Nuts\n\u2022 Tofu\n\u2022 Tempeh\n\u2022 Seitan\n\u2022 Lean beef\n\u2022 Turkey\n\u2022 Lentils\n\u2022 Edamame\n\u2022 Quinoa\n\n**Timing Tip:** Distribute throughout day, 20-40g per meal for optimal muscle protein synthesis (MPS). Post-workout window is valuable but total daily intake matters most.",
+    "source": "local",
+    "confidence": 0.5499999999999999,
+    "tags": [
+      "diet"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034720.3859699
+  },
+  {
+    "key": "food::high protein snacks under 200 calories",
+    "question": "High protein snacks under 200 calories",
+    "answer": "**High Protein Foods:**\n\u2022 Chicken breast\n\u2022 Salmon\n\u2022 Eggs\n\u2022 Greek yogurt\n\u2022 Lentils\n\u2022 Chickpeas\n\u2022 Tuna canned\n\u2022 Cottage cheese\n\u2022 Sardines\n\u2022 Beef lean\n\u2022 Tofu\n\u2022 Edamame",
+    "source": "local",
+    "confidence": 0.37833333333333324,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034720.395907
+  },
+  {
+    "key": "food::which has more protein - chicken or tofu?",
+    "question": "Which has more protein - chicken or tofu?",
+    "answer": "**Chicken Breast Nutrition Info**\n\n**Category:** Protein\n**Serving Size:** 100g (cooked)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 165\n\u2022 Protein: 31g\n\u2022 Carbs: 0g\n\u2022 Fat: 3.6g\n\u2022 Fiber: 0g\n\n**Benefits:**\n\u2022 Lean protein\n\u2022 Low fat\n\u2022 Versatile\n\u2022 Muscle building\n\u2022 High satiety\n\n**Preparation:** Grill, bake, or boil",
+    "source": "local",
+    "confidence": 0.40714285714285714,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034720.4092724
+  },
+  {
+    "key": "food::almond milk vs oat milk nutrition",
+    "question": "Almond milk vs oat milk nutrition",
+    "answer": "**Almonds Nutrition Info**\n\n**Category:** Fat + Protein\n**Serving Size:** 23 almonds (28g)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 164\n\u2022 Protein: 6g\n\u2022 Carbs: 6g\n\u2022 Fat: 14g\n\u2022 Fiber: 3.5g\n\n**Benefits:**\n\u2022 Magnesium\n\u2022 Vitamin E (antioxidant)\n\u2022 Heart health\n\u2022 Blood sugar control\n\u2022 Healthy skin\n\n**Preparation:** Raw, roasted, or soaked",
+    "source": "local",
+    "confidence": 0.43,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034720.4187725
+  },
+  {
+    "key": "food::what to eat when craving junk food",
+    "question": "What to eat when craving junk food",
+    "answer": "**Chicken Breast Nutrition Info**\n\n**Category:** Protein\n**Serving Size:** 100g (cooked)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 165\n\u2022 Protein: 31g\n\u2022 Carbs: 0g\n\u2022 Fat: 3.6g\n\u2022 Fiber: 0g\n\n**Benefits:**\n\u2022 Lean protein\n\u2022 Low fat\n\u2022 Versatile\n\u2022 Muscle building\n\u2022 High satiety\n\n**Preparation:** Grill, bake, or boil",
+    "source": "local",
+    "confidence": 0.8071428571428572,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034723.325002
+  },
+  {
+    "key": "fitness::i want to build muscle",
+    "question": "I want to build muscle",
+    "answer": "Muscle Building Strategy:\n\u2022 Strategy: Progressive strength training with adequate nutrition\n\u2022 Weekly Routine:\n  - 4-5 strength training sessions\n  - 1-2 light cardio sessions\n\u2022 Key Points:\n  - Focus on compound exercises\n  - Progressive overload is crucial\n  - Eat in calorie surplus",
+    "source": "local",
+    "confidence": 0.47302325581395355,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034727.550236
+  },
+  {
+    "key": "diet::best exercises for weight loss",
+    "question": "Best exercises for weight loss",
+    "answer": "**Weight Loss Diet Strategy**\n\n**Strategy:** Calorie deficit of 300-500 calories below maintenance (lose 0.5-1 lb per week)\n\n**Key Approaches:**\n\u2022 Track calories or use portion control (apps: MyFitnessPal, Cronometer)\n\u2022 Increase protein intake to 1.0-1.2g per pound (keeps you full, preserves muscle)\n\u2022 Prioritize whole foods (higher volume, lower calorie density)\n\u2022 Reduce processed foods and sugar\n\u2022 Stay hydrated (water before meals reduces intake)\n\u2022 Include regular exercise (NEAT matters: walk more)\n\u2022 Get adequate sleep (poor sleep increases hunger hormones)\n\u2022 Eat slowly and mindfully (takes 20 min for fullness signal)\n\n**Foods to Limit:**\n\u2022 Sugary drinks (soda, juice, sweetened coffee)\n\u2022 Processed snacks (chips, cookies)\n\u2022 High-calorie oils (heavy dressings)\n\u2022 Alcohol (7 cal/g, impairs judgment)\n\u2022 Refined carbs (white bread, pastries)\n\n**Foods to Emphasize:**\n\u2022 Lean proteins (chicken, fish, tofu, legumes)\n\u2022 Non-starchy vegetables (broccoli, spinach, peppers, cauliflower)\n\u2022 Whole grains (oats, quinoa, brown rice)\n\u2022 Fruits (berries, apples, citrus - whole fruit, not juice)\n\u2022 Legumes (beans, lentils - high satiety)",
+    "source": "local",
+    "confidence": 0.5405223880597015,
+    "tags": [
+      "diet"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034739.3426852
+  },
+  {
+    "key": "health::how to improve my sleep quality?",
+    "question": "How to improve my sleep quality?",
+    "answer": "You usually need about 7-9 hours per night.\n\nWhy it matters: Sleep is crucial for recovery, immune function, and mental health\n\nHelpful sleep tips:\n\u2022 Maintain consistent sleep schedule\n\u2022 Keep bedroom dark and cool\n\u2022 Avoid screens 30 minutes before bed\n\u2022 Limit caffeine after 2 PM\n\u2022 Exercise regularly (but not before bed)\n\nSleep happens in light sleep, deep sleep, and REM sleep, and each stage helps recovery in a different way.",
+    "source": "local",
+    "confidence": 0.8666666666666667,
+    "tags": [
+      "health"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034739.3661385
+  },
+  {
+    "key": "food::how to cook salmon?",
+    "question": "How to cook salmon?",
+    "answer": "**Salmon Nutrition Info**\n\n**Category:** Protein + Omega-3\n**Serving Size:** 100g (cooked)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 206\n\u2022 Protein: 22g\n\u2022 Carbs: 0g\n\u2022 Fat: 12g\n\u2022 Fiber: 0g\n\n**Benefits:**\n\u2022 Omega-3 fatty acids\n\u2022 Heart health\n\u2022 Brain health\n\u2022 Anti-inflammatory\n\u2022 Skin health\n\n**Preparation:** Bake, grill, or pan-sear",
+    "source": "local",
+    "confidence": 0.92,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034739.3836596
+  },
+  {
+    "key": "fitness::how many reps for muscle growth?",
+    "question": "How many reps for muscle growth?",
+    "answer": "Muscle Building Strategy:\n\u2022 Strategy: Progressive strength training with adequate nutrition\n\u2022 Weekly Routine:\n  - 4-5 strength training sessions\n  - 1-2 light cardio sessions\n\u2022 Key Points:\n  - Focus on compound exercises\n  - Progressive overload is crucial\n  - Eat in calorie surplus",
+    "source": "local",
+    "confidence": 0.5425438596491228,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034740.377225
+  },
+  {
+    "key": "food::best high protein snacks",
+    "question": "Best high protein snacks",
+    "answer": "**High Protein Foods:**\n\u2022 Chicken breast\n\u2022 Salmon\n\u2022 Eggs\n\u2022 Greek yogurt\n\u2022 Lentils\n\u2022 Chickpeas\n\u2022 Tuna canned\n\u2022 Cottage cheese\n\u2022 Sardines\n\u2022 Beef lean\n\u2022 Tofu\n\u2022 Edamame",
+    "source": "local",
+    "confidence": 0.29767441860465116,
+    "tags": [
+      "food"
+    ],
+    "intent": "food",
+    "updated_at": 1777036392.6648836
+  },
+  {
+    "key": "fitness::cardio before or after weights?",
+    "question": "Cardio before or after weights?",
+    "answer": "**Cardio Exercise Guide**\n\nDescription: Cardiovascular exercises that increase heart rate and improve endurance\n\n**Examples:** Running, Cycling, Swimming, Jump Rope, Rowing, Elliptical\n\n**Benefits:**\n\u2022 Burns calories\n\u2022 Improves heart health\n\u2022 Increases stamina\n\u2022 Reduces stress\n\n**Duration:** 20-60 minutes\n**Frequency:** 3-5 times per week\n\n**Beginner Tip:** Start with 20-30 minutes at moderate intensity",
+    "source": "local",
+    "confidence": 0.5,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034743.6643765
+  },
+  {
+    "key": "diet::how to lose belly fat?",
+    "question": "How to lose belly fat?",
+    "answer": "**Fat Guide**\n\n**Function:** Supports hormone production (testosterone, estrogen), nutrient absorption (A,D,E,K), brain function (60% of brain is fat), cell membrane integrity, insulation.\n\n**Daily Intake:** 20-35% of total calories (minimum 0.3-0.4g per pound for hormone health)\n\n**Healthy Fat Sources:**\n\u2022 Avocado\n\u2022 Olive oil\n\u2022 Nuts\n\u2022 Fatty fish\n\u2022 Seeds\n\u2022 Nut butters\n\u2022 Dark chocolate (70%+ cocoa)\n\n**Important:** Avoid entirely (except naturally occurring in small amounts in meat/dairy)",
+    "source": "local",
+    "confidence": 0.265,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1777036392.7375357
+  },
+  {
+    "key": "diet::what's the ideal macro ratio for muscle gain?",
+    "question": "What's the ideal macro ratio for muscle gain?",
+    "answer": "**Muscle Gain Diet Strategy**\n\n**Strategy:** Calorie surplus of 300-500 calories with progressive resistance training\n\n**Key Approaches:**\n\u2022 Eat 1g protein per pound of body weight (minimum)\n\u2022 Consume adequate carbs for energy and glycogen (3-4g per pound)\n\u2022 Include healthy fats (0.4-0.5g per pound) for hormone production\n\u2022 Time carbs and protein around workouts (pre and post)\n\u2022 Progressively overload in gym\n\u2022 Get 7-9 hours sleep for recovery\n\u2022 Consider creatine supplementation (5g daily)\n\n**Sample Daily Macros:**\n\u2022 Meal1 Breakfast: 4 eggs + 1 cup oats + 1 cup berries + 2 tbsp peanut butter (\u2248700 cal, 40g protein)\n\u2022 Meal2 Lunch: 6 oz chicken breast + 1.5 cups brown rice + 2 cups broccoli (\u2248650 cal, 50g protein)\n\u2022 Meal3 Post Workout: 2 scoops protein powder + 1 banana + 1 cup milk (\u2248400 cal, 50g protein)\n\u2022 Meal4 Dinner: 6 oz lean beef + 1 sweet potato + 1 cup green beans (\u2248600 cal, 45g protein)\n\u2022 Meal5 Before Bed: 1 cup cottage cheese + 1 tbsp almond butter (\u2248250 cal, 25g protein)",
+    "source": "local",
+    "confidence": 0.49444444444444446,
+    "tags": [
+      "diet"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034905.1868758
+  },
+  {
+    "key": "diet::vegan diet for muscle gain - is it possible?",
+    "question": "Vegan diet for muscle gain - is it possible?",
+    "answer": "**Muscle Gain Diet Strategy**\n\n**Strategy:** Calorie surplus of 300-500 calories with progressive resistance training\n\n**Key Approaches:**\n\u2022 Eat 1g protein per pound of body weight (minimum)\n\u2022 Consume adequate carbs for energy and glycogen (3-4g per pound)\n\u2022 Include healthy fats (0.4-0.5g per pound) for hormone production\n\u2022 Time carbs and protein around workouts (pre and post)\n\u2022 Progressively overload in gym\n\u2022 Get 7-9 hours sleep for recovery\n\u2022 Consider creatine supplementation (5g daily)\n\n**Sample Daily Macros:**\n\u2022 Meal1 Breakfast: 4 eggs + 1 cup oats + 1 cup berries + 2 tbsp peanut butter (\u2248700 cal, 40g protein)\n\u2022 Meal2 Lunch: 6 oz chicken breast + 1.5 cups brown rice + 2 cups broccoli (\u2248650 cal, 50g protein)\n\u2022 Meal3 Post Workout: 2 scoops protein powder + 1 banana + 1 cup milk (\u2248400 cal, 50g protein)\n\u2022 Meal4 Dinner: 6 oz lean beef + 1 sweet potato + 1 cup green beans (\u2248600 cal, 45g protein)\n\u2022 Meal5 Before Bed: 1 cup cottage cheese + 1 tbsp almond butter (\u2248250 cal, 25g protein)",
+    "source": "local",
+    "confidence": 0.8500000000000001,
+    "tags": [
+      "diet"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034906.2370894
+  },
+  {
+    "key": "food::how many calories in a banana?",
+    "question": "How many calories in a banana?",
+    "answer": "**Banana Nutrition Info**\n\n**Category:** Fruit\n**Serving Size:** 100g (medium ~118g)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 89\n\u2022 Protein: 1.1g\n\u2022 Carbs: 23g\n\u2022 Fat: 0.3g\n\u2022 Fiber: 2.6g\n\n**Benefits:**\n\u2022 Potassium (muscle function)\n\u2022 Quick energy\n\u2022 Portable\n\u2022 Vitamin B6\n\u2022 Magnesium\n\n**Preparation:** Use common safe preparation methods such as raw, boiled, baked, or mixed in meals as appropriate.",
+    "source": "local",
+    "confidence": 0.92,
+    "tags": [
+      "food"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777034906.4031456
+  },
+  {
+    "key": "food::what supplements should i take?",
+    "question": "What supplements should I take?",
+    "answer": "For most people, the core evidence-based supplements are:\n\n\u2022 Creatine monohydrate: 3-5 g daily\n\u2022 Protein powder: only if you miss protein targets\n\u2022 Vitamin D3: if blood levels are low\n\u2022 Omega-3: if fatty fish intake is low\n\u2022 Caffeine (optional) for performance, if tolerated\n\nStart with training, sleep, calories, and protein first; supplements are secondary.",
+    "source": "local",
+    "confidence": 0.265,
+    "tags": [
+      "food",
+      "supplements_basics"
+    ],
+    "intent": "food",
+    "updated_at": 1777036392.3205786
+  },
+  {
+    "key": "health::why does my back hurt after deadlifts?",
+    "question": "Why does my back hurt after deadlifts?",
+    "answer": "Back pain after deadlifts usually comes from setup or load management issues:\n\n\u2022 Keep a neutral spine and brace hard before each rep\n\u2022 Keep the bar close to your shins and thighs throughout\n\u2022 Avoid jerking the bar off the floor\n\u2022 Reduce load 10-20% and rebuild with strict technique\n\u2022 Add core stability and hip hinge drills between sessions\n\nStop and seek professional evaluation if pain is sharp, radiates down the leg, or persists beyond a few days.",
+    "source": "local",
+    "confidence": 0.32033898305084746,
+    "tags": [
+      "health",
+      "deadlift_back_pain"
+    ],
+    "intent": "health",
+    "updated_at": 1777036392.4644833
+  },
+  {
+    "key": "health::benefits of drinking more water",
+    "question": "Benefits of drinking more water",
+    "answer": "Water helps your body regulate temperature, digest food, and move nutrients around.\n\nA simple daily target is around About 8-10 glasses (2-3 liters) per day.\n\nSigns you may need more water: Dark urine, Thirst, Fatigue, Dizziness, Dry mouth.\n\nEasy hydration tips:\n\u2022 Drink water throughout the day, not all at once\n\u2022 More water needed during exercise\n\u2022 Listen to your body's thirst signals\n\u2022 Coconut water and herbal tea count toward hydration",
+    "source": "local",
+    "confidence": 0.265,
+    "tags": [
+      "health"
+    ],
+    "intent": "health",
+    "updated_at": 1777036392.574219
+  },
+  {
+    "key": "fitness::workout plan for 10 days",
+    "question": "workout plan for 10 days",
+    "answer": "To set a workout routine, keep it simple:\n\n\u2022 3 days strength (full body)\n\u2022 2 days cardio\n\u2022 1 to 2 recovery days\n\u2022 Keep sessions 30 to 45 minutes\n\nA sample week is: Mon strength, Tue cardio, Wed rest, Thu strength, Fri cardio, Sat strength, Sun rest.",
+    "source": "local",
+    "confidence": 0.315,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777035672.7472973
+  },
+  {
+    "key": "fitness::what is a good beginner workout routine?",
+    "question": "What is a good beginner workout routine?",
+    "answer": "Here is a simple beginner workout plan you can follow for your first week:\n\nMonday: 20 minute brisk walk\nTuesday: Full body bodyweight workout\nWednesday: Rest or gentle stretching\nThursday: 20 minute cardio session\nFriday: Full body bodyweight workout\nSaturday: Light activity like walking or yoga\nSunday: Rest\n\nHelpful tips:\n\u2022 Warm up for 5 minutes before training\n\u2022 Start with easy sets and perfect form\n\u2022 Drink water and sleep well\n\u2022 Increase intensity gradually each week",
+    "source": "local",
+    "confidence": 0.92,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "unknown",
+    "updated_at": 1777036182.5023475
+  },
+  {
+    "key": "diet::how much protein do i need daily?",
+    "question": "How much protein do I need daily?",
+    "answer": "**Protein Guide**\n\n**Function:** Builds and repairs muscle, creates enzymes and hormones, supports immune function, maintains skin/hair/nails.\n\n**Daily Intake:** {'sedentary_adult': '0.36g per pound (0.8g per kg) of body weight', 'active_adult': '0.8-1.0g per pound (1.6-2.2g per kg)', 'bodybuilder/athlete': '1.0-1.2g per pound (2.2-2.6g per kg)', 'weight_loss': '1.0-1.2g per pound to preserve muscle', 'older_adults': '1.0-1.2g per pound to prevent sarcopenia'}\n\n**Best Sources:**\n\u2022 Chicken\n\u2022 Fish\n\u2022 Eggs\n\u2022 Beans\n\u2022 Greek yogurt\n\u2022 Cottage cheese\n\u2022 Nuts\n\u2022 Tofu\n\u2022 Tempeh\n\u2022 Seitan\n\u2022 Lean beef\n\u2022 Turkey\n\u2022 Lentils\n\u2022 Edamame\n\u2022 Quinoa\n\n**Timing Tip:** Distribute throughout day, 20-40g per meal for optimal muscle protein synthesis (MPS). Post-workout window is valuable but total daily intake matters most.",
+    "source": "local",
+    "confidence": 0.773910411622276,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1777036392.154437
+  }
+]
