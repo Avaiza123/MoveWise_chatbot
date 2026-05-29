@@ -22,6 +22,15 @@ class KnowledgeEntry:
 class KnowledgeStore:
     """Simple persistent knowledge memory with lexical retrieval."""
 
+    STOPWORDS = {
+        "a", "an", "and", "are", "as", "at", "be", "but", "by", "do", "for", "from",
+        "get", "got", "how", "i", "if", "in", "is", "it", "me", "my", "need", "of",
+        "on", "or", "our", "should", "some", "that", "the", "their", "them", "there",
+        "these", "they", "this", "to", "too", "was", "we", "what", "when", "where",
+        "who", "why", "will", "with", "you", "your", "much", "many", "need", "want",
+        "please", "tell", "about", "can", "could", "would", "doe", "did", "does",
+    }
+
     GENERIC_ANSWER_MARKERS = (
         "simple fitness guide",
         "simple diet guide",
@@ -37,7 +46,8 @@ class KnowledgeStore:
         self._load()
 
     def _tokenize(self, text: str) -> List[str]:
-        return re.findall(r"\b[a-z0-9]+\b", (text or "").lower())
+        tokens = re.findall(r"\b[a-z0-9]+\b", (text or "").lower())
+        return [token for token in tokens if token not in self.STOPWORDS]
 
     def _load(self) -> None:
         try:

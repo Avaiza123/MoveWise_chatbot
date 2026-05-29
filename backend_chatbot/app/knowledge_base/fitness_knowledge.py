@@ -581,6 +581,18 @@ FITNESS_KNOWLEDGE = {
         },
         "q_can_i_spot_reduce_fat": {
             "answer": "No. Fat loss occurs systemically, not from exercising a specific area. You cannot target belly fat with crunches or arm fat with triceps extensions. Genetics determine where you lose fat first. Create a calorie deficit + full-body strength training + patience."
+        },
+        "q_walking_enough_exercise": {
+            "answer": "Walking is excellent exercise and often underrated. It improves health, steps, recovery, and calorie burn. For many people, 7,000-10,000 steps/day is a strong baseline, but walking alone may not build much muscle or maximal fitness. Combine it with strength training for best results."
+        },
+        "q_rest_days_needed": {
+            "answer": "Yes. Rest days are productive days because recovery drives adaptation. Most people do well with 3-5 training days plus 1-2 rest or active recovery days each week. If performance, sleep, or motivation drops, you likely need more recovery."
+        },
+        "q_muscle_soreness": {
+            "answer": "Mild soreness after new or hard training is normal. It usually peaks 24-72 hours and fades within a few days. Sharp pain, joint pain, swelling, or soreness that keeps getting worse is a red flag. Active recovery, walking, sleep, hydration, and light movement help."
+        },
+        "q_hiit_vs_liss": {
+            "answer": "HIIT is time-efficient and great for conditioning, but it is more fatiguing. LISS or steady-state cardio is easier to recover from and better for building a base. Most people do best with a mix: a few low-intensity sessions plus 1-3 HIIT sessions depending on goals and recovery."
         }
     }
 }

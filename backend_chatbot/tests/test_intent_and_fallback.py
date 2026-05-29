@@ -31,6 +31,16 @@ class IntentConfidenceTests(unittest.TestCase):
         self.assertEqual(intent, "fitness")
         self.assertGreater(confidence, 0.2)
 
+    def test_misspelled_nutrition_query_is_corrected(self):
+        intent, confidence = IntentClassifier.classify_intent("How much protien do I need for musle gain?")
+        self.assertEqual(intent, "diet")
+        self.assertGreater(confidence, 0.2)
+
+    def test_concatenated_sleep_query_is_corrected(self):
+        intent, confidence = IntentClassifier.classify_intent("How to improve sleepquality and sllep schedule?")
+        self.assertEqual(intent, "health")
+        self.assertGreater(confidence, 0.2)
+
 
 class FallbackRoutingTests(unittest.TestCase):
     def test_unknown_query_routes_to_web_fallback_when_result_available(self):
@@ -122,6 +132,74 @@ class FallbackRoutingTests(unittest.TestCase):
         mocked_fallback.assert_not_called()
         self.assertTrue(response.success)
         self.assertIn("metabolic adaptation", response.message.lower())
+
+    def test_typoed_protein_query_is_answered_locally(self):
+        bot = FitnessChatbot()
+
+        with patch.object(bot, "_handle_web_fallback") as mocked_fallback:
+            response = bot.process_query("How much protien do I need for musle gain?")
+
+        mocked_fallback.assert_not_called()
+        self.assertTrue(response.success)
+        self.assertIn("protein", response.message.lower())
+
+    def test_typoed_sleep_query_is_answered_locally(self):
+        bot = FitnessChatbot()
+
+        with patch.object(bot, "_handle_web_fallback") as mocked_fallback:
+            response = bot.process_query("How to improve sleepquality and sllep schedule?")
+
+        mocked_fallback.assert_not_called()
+        self.assertTrue(response.success)
+        self.assertIn("sleep", response.message.lower())
+
+    def test_water_intake_query_is_answered_locally(self):
+        bot = FitnessChatbot()
+
+        with patch.object(bot, "_handle_web_fallback") as mocked_fallback:
+            response = bot.process_query("How much waterintake do I need for training?")
+
+        mocked_fallback.assert_not_called()
+        self.assertTrue(response.success)
+        self.assertIn("hydration", response.message.lower())
+
+    def test_creatine_query_is_answered_locally(self):
+        bot = FitnessChatbot()
+
+        with patch.object(bot, "_handle_web_fallback") as mocked_fallback:
+            response = bot.process_query("Should I take creatine?")
+
+        mocked_fallback.assert_not_called()
+        self.assertTrue(response.success)
+        self.assertIn("creatine", response.message.lower())
+
+    def test_walking_query_is_answered_locally(self):
+        bot = FitnessChatbot()
+
+        with patch.object(bot, "_handle_web_fallback") as mocked_fallback:
+            response = bot.process_query("Is walking enough exercise?")
+
+        mocked_fallback.assert_not_called()
+        self.assertTrue(response.success)
+        self.assertIn("walking", response.message.lower())
+
+    def test_meal_prep_query_is_answered_locally(self):
+        bot = FitnessChatbot()
+
+        with patch.object(bot, "_handle_web_fallback") as mocked_fallback:
+            response = bot.process_query("How do I meal prep for the week?")
+
+        mocked_fallback.assert_not_called()
+        self.assertTrue(response.success)
+        self.assertIn("meal prep", response.message.lower())
+
+    def test_cottage_cheese_calories_query_uses_food_database(self):
+        bot = FitnessChatbot()
+        response = bot.process_query("How many calories in cottage cheese?")
+
+        self.assertTrue(response.success)
+        self.assertIn("cottage cheese", response.message.lower())
+        self.assertIn("protein", response.message.lower())
 
 
 class EndpointAnswerSourceFlagTests(unittest.TestCase):

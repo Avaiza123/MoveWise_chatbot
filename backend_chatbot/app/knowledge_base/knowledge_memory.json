@@ -138,7 +138,7 @@
       "fitness"
     ],
     "intent": "fitness",
-    "updated_at": 1777036366.994415
+    "updated_at": 1777900990.0689325
   },
   {
     "key": "fitness::how do i build muscle mass?",
@@ -211,7 +211,7 @@
       "fitness"
     ],
     "intent": "fitness",
-    "updated_at": 1777036371.511148
+    "updated_at": 1777900993.6734674
   },
   {
     "key": "health::tips for better sleep quality",
@@ -259,7 +259,7 @@
       "diet"
     ],
     "intent": "diet",
-    "updated_at": 1777036379.0817542
+    "updated_at": 1777900996.0140045
   },
   {
     "key": "diet::is whey protein necessary?",
@@ -283,7 +283,7 @@
       "diet"
     ],
     "intent": "diet",
-    "updated_at": 1777036379.1242306
+    "updated_at": 1777900996.0381153
   },
   {
     "key": "food::nutrition facts of avocado",
@@ -307,7 +307,7 @@
       "diet"
     ],
     "intent": "diet",
-    "updated_at": 1777036379.1874044
+    "updated_at": 1777900996.1008103
   },
   {
     "key": "food::benefits of eating broccoli",
@@ -487,7 +487,7 @@
       "food"
     ],
     "intent": "food",
-    "updated_at": 1777036392.6648836
+    "updated_at": 1777900998.7149951
   },
   {
     "key": "fitness::cardio before or after weights?",
@@ -511,7 +511,7 @@
       "diet"
     ],
     "intent": "diet",
-    "updated_at": 1777036392.7375357
+    "updated_at": 1777900790.4771683
   },
   {
     "key": "diet::what's the ideal macro ratio for muscle gain?",
@@ -560,7 +560,7 @@
       "supplements_basics"
     ],
     "intent": "food",
-    "updated_at": 1777036392.3205786
+    "updated_at": 1777900402.0063968
   },
   {
     "key": "health::why does my back hurt after deadlifts?",
@@ -573,7 +573,7 @@
       "deadlift_back_pain"
     ],
     "intent": "health",
-    "updated_at": 1777036392.4644833
+    "updated_at": 1777900998.6050155
   },
   {
     "key": "health::benefits of drinking more water",
@@ -585,7 +585,7 @@
       "health"
     ],
     "intent": "health",
-    "updated_at": 1777036392.574219
+    "updated_at": 1777900998.6754422
   },
   {
     "key": "fitness::workout plan for 10 days",
@@ -596,8 +596,8 @@
     "tags": [
       "fitness"
     ],
-    "intent": "unknown",
-    "updated_at": 1777035672.7472973
+    "intent": "fitness",
+    "updated_at": 1777963421.9134054
   },
   {
     "key": "fitness::what is a good beginner workout routine?",
@@ -622,5 +622,174 @@
     ],
     "intent": "diet",
     "updated_at": 1777036392.154437
+  },
+  {
+    "key": "health::is it bad to workout on little sleep?",
+    "question": "Is it bad to workout on little sleep?",
+    "answer": "You usually need about 7-9 hours per night.\n\nWhy it matters: Sleep is crucial for recovery, immune function, and mental health\n\nHelpful sleep tips:\n\u2022 Maintain consistent sleep schedule\n\u2022 Keep bedroom dark and cool\n\u2022 Avoid screens 30 minutes before bed\n\u2022 Limit caffeine after 2 PM\n\u2022 Exercise regularly (but not before bed)\n\nSleep happens in light sleep, deep sleep, and REM sleep, and each stage helps recovery in a different way.",
+    "source": "local",
+    "confidence": 0.2875,
+    "tags": [
+      "health"
+    ],
+    "intent": "health",
+    "updated_at": 1777900993.8400419
+  },
+  {
+    "key": "diet::hiit vs liss for fat loss?",
+    "question": "HIIT vs LISS for fat loss?",
+    "answer": "**Fat Guide**\n\n**Function:** Supports hormone production (testosterone, estrogen), nutrient absorption (A,D,E,K), brain function (60% of brain is fat), cell membrane integrity, insulation.\n\n**Daily Intake:** 20-35% of total calories (minimum 0.3-0.4g per pound for hormone health)\n\n**Healthy Fat Sources:**\n\u2022 Avocado\n\u2022 Olive oil\n\u2022 Nuts\n\u2022 Fatty fish\n\u2022 Seeds\n\u2022 Nut butters\n\u2022 Dark chocolate (70%+ cocoa)\n\n**Important:** Avoid entirely (except naturally occurring in small amounts in meat/dairy)",
+    "source": "local",
+    "confidence": 0.39444444444444443,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1777900637.9728203
+  },
+  {
+    "key": "diet::body recomposition - lose fat and gain muscle simultaneously",
+    "question": "Body recomposition - lose fat and gain muscle simultaneously",
+    "answer": "**Fat Guide**\n\n**Function:** Supports hormone production (testosterone, estrogen), nutrient absorption (A,D,E,K), brain function (60% of brain is fat), cell membrane integrity, insulation.\n\n**Daily Intake:** 20-35% of total calories (minimum 0.3-0.4g per pound for hormone health)\n\n**Healthy Fat Sources:**\n\u2022 Avocado\n\u2022 Olive oil\n\u2022 Nuts\n\u2022 Fatty fish\n\u2022 Seeds\n\u2022 Nut butters\n\u2022 Dark chocolate (70%+ cocoa)\n\n**Important:** Avoid entirely (except naturally occurring in small amounts in meat/dairy)",
+    "source": "local",
+    "confidence": 0.6,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1777900639.8374445
+  },
+  {
+    "key": "diet::what supplements should i take?",
+    "question": "What supplements should I take?",
+    "answer": "For most people, the core evidence-based supplements are:\n\n\u2022 Creatine monohydrate: 3-5 g daily\n\u2022 Protein powder: only if you miss protein targets\n\u2022 Vitamin D3: if blood levels are low\n\u2022 Omega-3: if fatty fish intake is low\n\u2022 Caffeine (optional) for performance, if tolerated\n\nStart with training, sleep, calories, and protein first; supplements are secondary.",
+    "source": "local",
+    "confidence": 0.91,
+    "tags": [
+      "diet",
+      "supplements_basics"
+    ],
+    "intent": "diet",
+    "updated_at": 1777900790.1140292
+  },
+  {
+    "key": "diet::how to lose fat but keep muscle?",
+    "question": "How to lose fat but keep muscle?",
+    "answer": "**Fat Guide**\n\n**Function:** Supports hormone production (testosterone, estrogen), nutrient absorption (A,D,E,K), brain function (60% of brain is fat), cell membrane integrity, insulation.\n\n**Daily Intake:** 20-35% of total calories (minimum 0.3-0.4g per pound for hormone health)\n\n**Healthy Fat Sources:**\n\u2022 Avocado\n\u2022 Olive oil\n\u2022 Nuts\n\u2022 Fatty fish\n\u2022 Seeds\n\u2022 Nut butters\n\u2022 Dark chocolate (70%+ cocoa)\n\n**Important:** Avoid entirely (except naturally occurring in small amounts in meat/dairy)",
+    "source": "local",
+    "confidence": 0.9,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1777900994.9828653
+  },
+  {
+    "key": "fitness::not seeing muscle growth after 6 months",
+    "question": "Not seeing muscle growth after 6 months",
+    "answer": "Muscle Building Strategy:\n\u2022 Strategy: Progressive strength training with adequate nutrition\n\u2022 Weekly Routine:\n  - 4-5 strength training sessions\n  - 1-2 light cardio sessions\n\u2022 Key Points:\n  - Focus on compound exercises\n  - Progressive overload is crucial\n  - Eat in calorie surplus",
+    "source": "local",
+    "confidence": 0.88,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "fitness",
+    "updated_at": 1777900998.3885856
+  },
+  {
+    "key": "food::calories in chicken",
+    "question": "calories in chicken",
+    "answer": "**Chicken Breast Nutrition Info**\n\n**Category:** Protein\n**Serving Size:** 100g (cooked)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 165\n\u2022 Protein: 31g\n\u2022 Carbs: 0g\n\u2022 Fat: 3.6g\n\u2022 Fiber: 0g\n\n**Benefits:**\n\u2022 Lean protein\n\u2022 Low fat\n\u2022 Versatile\n\u2022 Muscle building\n\u2022 High satiety\n\n**Preparation:** Grill, bake, or boil",
+    "source": "local",
+    "confidence": 0.92,
+    "tags": [
+      "food"
+    ],
+    "intent": "food",
+    "updated_at": 1777963372.3064497
+  },
+  {
+    "key": "health::sleep routine",
+    "question": "sleep routine",
+    "answer": "You usually need about 7-9 hours per night.\n\nWhy it matters: Sleep is crucial for recovery, immune function, and mental health\n\nHelpful sleep tips:\n\u2022 Maintain consistent sleep schedule\n\u2022 Keep bedroom dark and cool\n\u2022 Avoid screens 30 minutes before bed\n\u2022 Limit caffeine after 2 PM\n\u2022 Exercise regularly (but not before bed)\n\nSleep happens in light sleep, deep sleep, and REM sleep, and each stage helps recovery in a different way.",
+    "source": "local",
+    "confidence": 0.9333333333333333,
+    "tags": [
+      "health"
+    ],
+    "intent": "health",
+    "updated_at": 1778268466.1588256
+  },
+  {
+    "key": "diet::how much protein do i need for muscle gain?",
+    "question": "how much protein do i need for muscle gain?",
+    "answer": "**Protein Guide**\n\n**Function:** Builds and repairs muscle, creates enzymes and hormones, supports immune function, maintains skin/hair/nails.\n\n**Daily Intake:** {'sedentary_adult': '0.36g per pound (0.8g per kg) of body weight', 'active_adult': '0.8-1.0g per pound (1.6-2.2g per kg)', 'bodybuilder/athlete': '1.0-1.2g per pound (2.2-2.6g per kg)', 'weight_loss': '1.0-1.2g per pound to preserve muscle', 'older_adults': '1.0-1.2g per pound to prevent sarcopenia'}\n\n**Best Sources:**\n\u2022 Chicken\n\u2022 Fish\n\u2022 Eggs\n\u2022 Beans\n\u2022 Greek yogurt\n\u2022 Cottage cheese\n\u2022 Nuts\n\u2022 Tofu\n\u2022 Tempeh\n\u2022 Seitan\n\u2022 Lean beef\n\u2022 Turkey\n\u2022 Lentils\n\u2022 Edamame\n\u2022 Quinoa\n\n**Timing Tip:** Distribute throughout day, 20-40g per meal for optimal muscle protein synthesis (MPS). Post-workout window is valuable but total daily intake matters most.",
+    "source": "local",
+    "confidence": 0.8444444444444443,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1780077780.942421
+  },
+  {
+    "key": "health::how much water intake do i need for training?",
+    "question": "how much water intake do i need for training?",
+    "answer": "Hydration matters for temperature control, digestion, energy, and recovery.\n\nA practical target is About 8-10 glasses (2-3 liters) per day per day, adjusted for body size and training.\n\nSigns you may need more water:\nDark urine, Thirst, Fatigue, Dizziness, Dry mouth\n\nTips:\n\u2022 Drink water throughout the day, not all at once\n\u2022 More water needed during exercise\n\u2022 Listen to your body's thirst signals\n\u2022 Coconut water and herbal tea count toward hydration\n\nDuring exercise: sip steadily, and consider electrolytes if you sweat heavily or train for more than an hour.",
+    "source": "local",
+    "confidence": 0.92,
+    "tags": [
+      "health"
+    ],
+    "intent": "health",
+    "updated_at": 1780077819.8192866
+  },
+  {
+    "key": "diet::should i take creatine?",
+    "question": "should i take creatine?",
+    "answer": "Creatine monohydrate is one of the best-studied supplements. Take 3-5g daily, any time of day, consistently. It supports strength, power, recovery, and muscle fullness. It is not a steroid and does not require cycling for most people.",
+    "source": "local",
+    "confidence": 0.91,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1780078159.3403087
+  },
+  {
+    "key": "diet::how do i meal prep for the week?",
+    "question": "how do i meal prep for the week?",
+    "answer": "Meal prep works best when you repeat simple meals: a protein, a carb, a vegetable, and a fat. Batch-cook 2-3 proteins, 2 carbs, and 2 vegetables so you can mix and match through the week.",
+    "source": "local",
+    "confidence": 0.6631147540983607,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1780078159.4315593
+  },
+  {
+    "key": "fitness::is walking enough exercise?",
+    "question": "is walking enough exercise?",
+    "answer": "Walking is excellent exercise and often underrated. It improves health, steps, recovery, and calorie burn. For many people, 7,000-10,000 steps/day is a strong baseline, but walking alone may not build much muscle or maximal fitness. Combine it with strength training for best results.",
+    "source": "local",
+    "confidence": 0.32499999999999996,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "fitness",
+    "updated_at": 1780078213.8448968
+  },
+  {
+    "key": "food::how many calories in cottage cheese?",
+    "question": "how many calories in cottage cheese?",
+    "answer": "**Cottage Cheese Nutrition Info**\n\n**Category:** Protein\n**Serving Size:** 100g (low-fat 2%)\n\n**Nutrition Per Serving:**\n\u2022 Calories: 84\n\u2022 Protein: 11g\n\u2022 Carbs: 3g\n\u2022 Fat: 2.3g\n\u2022 Fiber: 0g\n\n**Benefits:**\n\u2022 High protein (casein - slow digesting)\n\u2022 Calcium\n\u2022 Satiety (great before bed)\n\u2022 Versatile\n\n**Preparation:** Eat plain, with fruit, or in recipes",
+    "source": "local",
+    "confidence": 0.92,
+    "tags": [
+      "food"
+    ],
+    "intent": "food",
+    "updated_at": 1780078213.533366
   }
 ]

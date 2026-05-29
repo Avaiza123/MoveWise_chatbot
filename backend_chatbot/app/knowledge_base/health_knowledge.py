@@ -4,12 +4,25 @@ HEALTH_KNOWLEDGE = {
         "sleep": {
             "importance": "Sleep is crucial for recovery, immune function, and mental health",
             "recommended_hours": "7-9 hours per night",
+            "recommended_hours_by_age": {
+                "teens": "8-10 hours",
+                "adults": "7-9 hours",
+                "older_adults": "7-8 hours"
+            },
             "tips": [
                 "Maintain consistent sleep schedule",
                 "Keep bedroom dark and cool",
                 "Avoid screens 30 minutes before bed",
                 "Limit caffeine after 2 PM",
-                "Exercise regularly (but not before bed)"
+                "Exercise regularly (but not before bed)",
+                "Keep naps short if you struggle with insomnia",
+                "Use a wind-down routine: dim lights, stretch, breathe slowly"
+            ],
+            "bedtime_routine": [
+                "Set a consistent bedtime and wake time",
+                "Stop heavy meals and alcohol close to bedtime",
+                "Reduce bright screens and stimulating work",
+                "Keep the room cool, quiet, and dark"
             ],
             "sleep_stages": {
                 "light_sleep": "Helps consolidate memories and clear metabolic waste",
@@ -20,6 +33,11 @@ HEALTH_KNOWLEDGE = {
         "hydration": {
             "importance": "Water regulates body temperature, aids digestion, and transports nutrients",
             "daily_intake": "About 8-10 glasses (2-3 liters) per day",
+            "daily_intake_by_activity": {
+                "light_activity": "about 2-2.5 liters",
+                "moderate_activity": "about 2.5-3 liters",
+                "heavy_sweating": "about 3+ liters, plus electrolytes if needed"
+            },
             "factors": ["Body weight", "Activity level", "Climate", "Individual needs"],
             "signs_of_dehydration": ["Dark urine", "Thirst", "Fatigue", "Dizziness", "Dry mouth"],
             "tips": [
@@ -27,7 +45,12 @@ HEALTH_KNOWLEDGE = {
                 "More water needed during exercise",
                 "Listen to your body's thirst signals",
                 "Coconut water and herbal tea count toward hydration"
-            ]
+            ],
+            "exercise_hydration": {
+                "before_workout": "Drink a glass of water 30-60 minutes before training",
+                "during_workout": "Sip regularly, especially in heat or during long sessions",
+                "after_workout": "Replace fluids after sweating, and add electrolytes if needed"
+            }
         },
         "stress_management": {
             "importance": "Chronic stress impacts physical and mental health",

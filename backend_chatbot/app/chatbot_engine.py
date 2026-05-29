@@ -52,14 +52,15 @@ class FitnessChatbot:
             # Clean query
             clean_query = self.query_analyzer.clean_query(user_query)
             clean_query = self._expand_contextual_query(clean_query)
-            logger.info(f"Processing query: {clean_query}")
+            routing_query = self.intent_classifier.preprocess_query(clean_query)
+            logger.info(f"Processing query: {routing_query}")
             
             # Classify intent
-            intent, confidence = self.intent_classifier.classify_intent(clean_query)
+            intent, confidence = self.intent_classifier.classify_intent(routing_query)
             logger.info(f"Intent: {intent}, Confidence: {confidence}")
 
             # Retrieval path from persistent learned knowledge, constrained by predicted intent.
-            learned = self.knowledge_store.retrieve(clean_query, intent=intent, min_score=0.52)
+            learned = self.knowledge_store.retrieve(routing_query, intent=intent, min_score=0.52)
             if learned:
                 return ChatbotResponse(
                     success=True,
@@ -79,10 +80,10 @@ class FitnessChatbot:
                 intent = "unknown"
             
             # Extract entities
-            entities = self.intent_classifier.extract_entities(clean_query)
+            entities = self.intent_classifier.extract_entities(routing_query)
 
             # Estimate whether local knowledge likely contains enough signal.
-            local_support = self.intent_classifier.get_local_support_score(clean_query)
+            local_support = self.intent_classifier.get_local_support_score(routing_query)
 
             if self._should_use_web_fallback(intent, confidence, local_support, entities):
                 web_response = self._handle_web_fallback(clean_query, intent, confidence)
@@ -91,13 +92,13 @@ class FitnessChatbot:
             
             # Get response based on intent
             if intent == "fitness":
-                response = self._handle_fitness_query(clean_query, entities)
+                response = self._handle_fitness_query(routing_query, entities)
             elif intent == "health":
-                response = self._handle_health_query(clean_query, entities)
+                response = self._handle_health_query(routing_query, entities)
             elif intent == "diet":
-                response = self._handle_diet_query(clean_query, entities)
+                response = self._handle_diet_query(routing_query, entities)
             elif intent == "food":
-                response = self._handle_food_query(clean_query, entities)
+                response = self._handle_food_query(routing_query, entities)
             else:
                 response = ChatbotResponse(
                     success=False,
@@ -116,7 +117,7 @@ class FitnessChatbot:
             self.context_manager.add_to_history("user", clean_query)
             self.context_manager.add_to_history("bot", response.message)
 
-            self._maybe_learn_from_response(clean_query, intent, confidence, response)
+            self._maybe_learn_from_response(routing_query, intent, confidence, response)
             
             return response
             
@@ -406,6 +407,89 @@ class FitnessChatbot:
         is_beginner = any(term in query_lower for term in ["beginner", "beginer", "begineer"])
         asks_plan = any(term in query_lower for term in ["routine", "workout", "plan", "schedule"])
 
+        if any(term in query_lower for term in ["walking enough", "is walking enough", "how much should i walk", "walk enough exercise"]):
+            return ChatbotResponse(
+                success=True,
+                message=FITNESS_KNOWLEDGE["faqs"]["q_walking_enough_exercise"]["answer"],
+                data=FITNESS_KNOWLEDGE["faqs"]["q_walking_enough_exercise"],
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["rest day", "rest days", "should i exercise every day", "do i need rest"]):
+            return ChatbotResponse(
+                success=True,
+                message=FITNESS_KNOWLEDGE["faqs"]["q_rest_days_needed"]["answer"],
+                data=FITNESS_KNOWLEDGE["faqs"]["q_rest_days_needed"],
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["soreness", "doms", "muscle sore", "muscle soreness"]):
+            return ChatbotResponse(
+                success=True,
+                message=FITNESS_KNOWLEDGE["faqs"]["q_muscle_soreness"]["answer"],
+                data=FITNESS_KNOWLEDGE["faqs"]["q_muscle_soreness"],
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["hiit vs liss", "hiit or liss", "steady state cardio", "hiit and liss"]):
+            return ChatbotResponse(
+                success=True,
+                message=FITNESS_KNOWLEDGE["faqs"]["q_hiit_vs_liss"]["answer"],
+                data=FITNESS_KNOWLEDGE["faqs"]["q_hiit_vs_liss"],
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["home workout", "no equipment", "bodyweight", "apartment friendly"]):
+            calisthenics = FITNESS_KNOWLEDGE["workout_types"]["calisthenics"]
+            return ChatbotResponse(
+                success=True,
+                message=(
+                    "Here is a practical home workout focus:\n\n"
+                    f"{calisthenics['description']}\n\n"
+                       f"Examples: {', '.join(calisthenics['examples'])}\n\n"
+                       f"Benefits:\n" + "\n".join(f"• {benefit}" for benefit in calisthenics['benefits']) +
+                    f"\n\nDuration: {calisthenics['duration']}\n"
+                    f"Frequency: {calisthenics['frequency']}\n\n"
+                    f"Progression: {calisthenics['progression']}\n\n"
+                    "Simple starter circuit: squats, push-ups, planks, lunges, and rows or towel rows for 2-4 rounds."
+                ),
+                data=calisthenics,
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["progressive overload", "plateau", "stuck", "not improving"]):
+            principles = FITNESS_KNOWLEDGE["training_principles"]
+            return ChatbotResponse(
+                success=True,
+                message="Progressive overload is how you keep improving over time:\n\n"
+                       "• Add a little weight, reps, or sets when performance is stable\n"
+                       "• Keep form strict so the stress stays on the target muscles\n"
+                       "• Use small jumps, especially on upper-body lifts\n"
+                       "• Deload every few weeks if fatigue is building\n\n"
+                       f"Core principle: {principles['progressive_overload']}\n"
+                       f"Recovery principle: {principles['recovery']}\n"
+                       f"Form principle: {principles['form_over_ego']}",
+                data=principles,
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["warm up", "warm-up", "cool down", "cool-down", "mobility"]):
+            return ChatbotResponse(
+                success=True,
+                message="A good warm-up and cool-down improves performance and reduces injury risk:\n\n"
+                       "Warm-up:\n"
+                       "• 5 minutes easy cardio or brisk movement\n"
+                       "• Dynamic mobility for the joints you will train\n"
+                       "• 1-3 ramp-up sets before your first hard lift\n\n"
+                       "Cool-down:\n"
+                       "• 3-5 minutes easy walking or cycling\n"
+                       "• Light stretching for the worked muscles\n"
+                       "• Use slower breathing to bring heart rate down\n\n"
+                       "If you want, I can build a warm-up for legs, push, pull, or full-body days.",
+                data={"focus": "warm_up_and_cool_down", "source": "local"},
+                response_type=ResponseType.SUCCESS,
+            )
+
         if "squat" in query_lower and any(term in query_lower for term in ["depth", "range", "form", "technique", "mobility"]):
             return ChatbotResponse(
                 success=True,
@@ -672,6 +756,44 @@ class FitnessChatbot:
         """Handle health-related queries"""
         query_lower = query.lower()
 
+        if any(term in query_lower for term in ["sleep", "bedtime", "sleep quality", "sleep schedule", "insomnia", "sleep hygiene"]):
+            sleep_info = HEALTH_KNOWLEDGE["general_health"]["sleep"]
+            message = (
+                f"Most adults do best with {sleep_info['recommended_hours']} of sleep per night.\n\n"
+                f"Why it matters: {sleep_info['importance']}\n\n"
+                "Sleep hygiene basics:\n"
+                + "\n".join(f"• {tip}" for tip in sleep_info['tips'])
+                + "\n\n"
+                "Extra sleep targets:\n"
+                f"• Light sleep: {sleep_info['sleep_stages']['light_sleep']}\n"
+                f"• Deep sleep: {sleep_info['sleep_stages']['deep_sleep']}\n"
+                f"• REM sleep: {sleep_info['sleep_stages']['rem_sleep']}\n"
+            )
+            return ChatbotResponse(
+                success=True,
+                message=message,
+                data=sleep_info,
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["water", "hydration", "water intake", "drink more water", "dehydration"]):
+            hydration = HEALTH_KNOWLEDGE["general_health"]["hydration"]
+            message = (
+                "Hydration matters for temperature control, digestion, energy, and recovery.\n\n"
+                f"A practical target is {hydration['daily_intake']} per day, adjusted for body size and training.\n\n"
+                "Signs you may need more water:\n"
+                + ", ".join(hydration['signs_of_dehydration'])
+                + "\n\nTips:\n"
+                + "\n".join(f"• {tip}" for tip in hydration['tips'])
+                + "\n\nDuring exercise: sip steadily, and consider electrolytes if you sweat heavily or train for more than an hour."
+            )
+            return ChatbotResponse(
+                success=True,
+                message=message,
+                data=hydration,
+                response_type=ResponseType.SUCCESS,
+            )
+
         if "back" in query_lower and any(term in query_lower for term in ["deadlift", "deadlifts", "hurt", "pain"]):
             return ChatbotResponse(
                 success=True,
@@ -739,6 +861,71 @@ class FitnessChatbot:
         """Handle diet and nutrition queries"""
         query_lower = query.lower()
         numbers = self.query_analyzer.extract_numbers(query_lower)
+
+        if any(term in query_lower for term in ["creatine", "protein powder", "supplement"]):
+            return ChatbotResponse(
+                success=True,
+                message=DIET_RESPONSES["common_questions"]["creatine"],
+                data={"topic": "creatine", "source": "local"},
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["intermittent fasting", "fasting", "omad"]):
+            return ChatbotResponse(
+                success=True,
+                message=DIET_RESPONSES["common_questions"]["intermittent_fasting"],
+                data=DIET_KNOWLEDGE["diet_plans"]["intermittent_fasting"],
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["meal prep", "prep meals", "prep for the week"]):
+            return ChatbotResponse(
+                success=True,
+                message=DIET_RESPONSES["common_questions"]["meal_prep"],
+                data={"topic": "meal_prep", "source": "local"},
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["pre workout meal", "before workout", "pre-workout", "eat before workout"]):
+            return ChatbotResponse(
+                success=True,
+                message=DIET_RESPONSES["common_questions"]["pre_workout_meal"],
+                data={"topic": "pre_workout_meal", "source": "local"},
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["post workout meal", "after workout", "post-workout", "eat after workout"]):
+            return ChatbotResponse(
+                success=True,
+                message=DIET_RESPONSES["common_questions"]["post_workout_meal"],
+                data={"topic": "post_workout_meal", "source": "local"},
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["high protein snack", "protein snack", "snack ideas"]):
+            return ChatbotResponse(
+                success=True,
+                message=DIET_RESPONSES["common_questions"]["high_protein_snacks"],
+                data={"topic": "high_protein_snacks", "source": "local"},
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["pre workout", "post workout", "meal timing", "when to eat", "around workouts"]):
+            protein = DIET_KNOWLEDGE["nutrition_basics"]["macronutrients"]["protein"]
+            carbs = DIET_KNOWLEDGE["nutrition_basics"]["macronutrients"]["carbohydrates"]
+            return ChatbotResponse(
+                success=True,
+                message="Meal timing is most useful when it supports training, recovery, and appetite control:\n\n"
+                       "• Pre-workout: choose an easy-to-digest carb + protein meal 1-3 hours before training\n"
+                       "• Post-workout: get protein and carbs within a few hours to support recovery\n"
+                       "• Protein: " + protein['timing'] + "\n"
+                       "• Carbs: especially helpful around hard sessions for glycogen replenishment\n\n"
+                       "Simple examples:\n"
+                       "• Pre-workout: yogurt + banana, oats + whey, or rice + chicken\n"
+                       "• Post-workout: chicken and rice, protein shake + fruit, or eggs + toast",
+                data={"protein": protein, "carbohydrates": carbs, "focus": "meal_timing"},
+                response_type=ResponseType.SUCCESS,
+            )
 
         if "tdee" in query_lower or ("calculate" in query_lower and "calorie" in query_lower):
             return ChatbotResponse(
@@ -978,19 +1165,25 @@ class FitnessChatbot:
             food_name = entities["foods"][0]
             for db_food_name, food_info in FOOD_DATABASE["foods"].items():
                 if food_name in db_food_name or db_food_name in food_name:
+                    calories = food_info.get("calories", "N/A")
+                    protein = food_info.get("protein", "N/A")
+                    carbs = food_info.get("carbs", "N/A")
+                    fat = food_info.get("fat", "N/A")
+                    fiber = food_info.get("fiber", 0)
+                    benefits = food_info.get("benefits", [])
                     return ChatbotResponse(
                         success=True,
                         message=f"**{db_food_name.replace('_', ' ').title()} Nutrition Info**\n\n" +
                                f"**Category:** {food_info['category']}\n" +
                                f"**Serving Size:** {food_info['serving_size']}\n\n" +
                                f"**Nutrition Per Serving:**\n" +
-                               f"• Calories: {food_info['calories']}\n" +
-                               f"• Protein: {food_info['protein']}g\n" +
-                               f"• Carbs: {food_info['carbs']}g\n" +
-                               f"• Fat: {food_info['fat']}g\n" +
-                               f"• Fiber: {food_info['fiber']}g\n\n" +
+                               f"• Calories: {calories}\n" +
+                               f"• Protein: {protein}g\n" +
+                               f"• Carbs: {carbs}g\n" +
+                               f"• Fat: {fat}g\n" +
+                               f"• Fiber: {fiber}g\n\n" +
                                f"**Benefits:**\n" +
-                               "\n".join(f"• {benefit}" for benefit in food_info['benefits']) +
+                               "\n".join(f"• {benefit}" for benefit in benefits) +
                                f"\n\n**Preparation:** {food_info.get('preparation', 'Use common safe preparation methods such as raw, boiled, baked, or mixed in meals as appropriate.')}",
                         data=food_info,
                         response_type=ResponseType.SUCCESS

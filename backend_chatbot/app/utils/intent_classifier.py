@@ -7,6 +7,23 @@ from collections import Counter
 
 class IntentClassifier:
     """Classifies user queries into fitness, health, diet, or food categories with improved accuracy"""
+
+    PHRASE_CORRECTIONS = {
+        "waterintake": "water intake",
+        "sleepquality": "sleep quality",
+        "sleepschedule": "sleep schedule",
+        "workoutplan": "workout plan",
+        "mealplan": "meal plan",
+        "weightloss": "weight loss",
+        "musclegain": "muscle gain",
+        "fatloss": "fat loss",
+        "preworkout": "pre workout",
+        "postworkout": "post workout",
+        "bloodpressure": "blood pressure",
+        "highprotein": "high protein",
+        "lowcarb": "low carb",
+        "homeworkout": "home workout",
+    }
     
     # Expanded intent keywords mapping with synonyms and phrases
     INTENT_KEYWORDS = {
@@ -25,7 +42,9 @@ class IntentClassifier:
                 "beginner workout", "intermediate", "advanced", "home workout", "no equipment",
                 "depth", "range of motion", "form", "technique", "mobility", "bracing",
                 "pull up", "pull-up", "pullups", "pull-ups", "lat", "lats", "lat engagement",
-                "active hang", "scap pull-up", "deload signs"
+                "active hang", "scap pull-up", "deload signs", "push pull legs", "split routine",
+                "split workout", "ppl", "overtraining", "burnout", "soreness", "recovery",
+                "apartment friendly", "small space", "bodyweight", "where do i start"
             ],
             "negative_keywords": [
                 "food", "recipe", "cook", "ingredient", "meal", "restaurant", "flavor", "taste",
@@ -45,7 +64,12 @@ class IntentClassifier:
                 r"(pull\s*-?ups?).*(lat|lats|engage|activation)",
                 r"(lat|lats).*(pull\s*-?ups?)",
                 r"(signs?|need|when).*(deload)",
-                r"(deload).*(signs?|need|when)"
+                r"(deload).*(signs?|need|when)",
+                r"(push\s*-?pull\s*-?legs|ppl|split\s+(routine|workout|program))",
+                r"(overtraining|burnout|soreness|recovery).*(workout|exercise|training)",
+                r"(never exercised|never exercise|where do i start|just starting).*(workout|exercise|gym|training)",
+                r"(calories?|calorie).*(burn|burned|burns).*(running|walk|walking|cycling|cardio|exercise|workout|training)",
+                r"(workout|exercise|training).*(calories?|calorie).*(burn|burned|burns)"
             ],
             "canonical_examples": [
                 "what is a good workout for beginners",
@@ -68,7 +92,8 @@ class IntentClassifier:
                 "anxiety", "depression", "mood", "energy", "fatigue", "tired",
                 "headache", "migraine", "back pain", "joint pain", "arthritis",
                 "vitamin d", "b12", "iron deficiency", "anemia", "allergy",
-                "water", "hydration", "dehydration",
+                "water", "hydration", "dehydration", "overtraining", "burnout", "soreness",
+                "little sleep", "sleep quality", "sleep schedule", "cholesterol",
                 "check up", "screening", "vaccine", "flu", "cold", "fever", "sleep routine", "bedtime", "wake up", "insomnia", "REM", "deep sleep",
         "circadian rhythm", "melatonin", "sleep quality", "night routine",
         "fall asleep", "stay asleep", "sleep schedule", "sleep hygiene"
@@ -117,13 +142,15 @@ class IntentClassifier:
                 "carb cycling", "cheat meal", "refeed", "metabolic adaptation",
                 "bmi", "body fat", "body composition", "maintenance", "surplus",
                 "nutrient timing", "pre workout meal", "post workout meal",
-                "omad", "if", "clean eating", "whole foods", "processed food"
+                "omad", "if", "clean eating", "whole foods", "processed food",
+                "calorie deficit", "body recomposition", "recomp", "abs", "snacking",
+                "late night snacking", "meal timing", "fat loss", "lose weight"
             ],
             "negative_keywords": [
                 "exercise", "workout", "rep", "set", "gym", "cardio", "lift"
             ],
             "patterns": [
-                r".*diet.*", r".*calorie.*", r".*meal plan.*", r".*weight.*",
+                r".*diet.*", r".*calorie.*", r".*meal plan.*",
                 r"how.*(much|many).*(protein|carbs|fat|calorie)",
                 r"(what|how).*\b(keto|vegan|paleo|intermittent fasting|omad)\b",
                 r"(lose|gain).*weight.*\b(diet|eat|nutrition)\b",
@@ -131,7 +158,10 @@ class IntentClassifier:
                 r"(best|good).*\b(pre workout|post workout).*meal",
                 r"(should|do).*\b(supplement|creatine|whey|protein powder)\b",
                 r"how.*(count|track).*macro",
-                r"(bulking|cutting).*\b(diet|meal|food)\b"
+                r"(bulking|cutting).*\b(diet|meal|food)\b",
+                r"(calorie deficit|body recomposition|recomp|late night snacking|meal timing)",
+                r"(abs|lose fat|fat loss).*(diet|eat|food|nutrition|calorie)",
+                r"(lose weight|gain weight).*(eat|diet|nutrition|calorie|food)"
             ],
             "canonical_examples": [
                 "how much protein do i need",
@@ -146,7 +176,7 @@ class IntentClassifier:
         "food": {
             "keywords": [
                 "food", "eat", "chicken", "fish", "eggs", "rice", "bread", "fruits", 
-                "vegetables", "protein powder", "supplements", "recipe", "cooking", 
+                "vegetables", "recipe", "cooking", 
                 "ingredient", "nutritional", "calories", "apple", "banana", "beef",
                 "pork", "turkey", "salmon", "tuna", "milk", "cheese", "yogurt",
                 "broccoli", "spinach", "oats", "quinoa", "avocado", "almond", "walnut",
@@ -222,6 +252,7 @@ class IntentClassifier:
         "cardio": "cardio",
         "cardiio": "cardio",
         "mucle": "muscle",
+        "musle": "muscle",
         "muscels": "muscles",
         "weigth": "weight",
         "wieght": "weight",
@@ -236,8 +267,20 @@ class IntentClassifier:
         "strengh": "strength",
         "hydration": "hydration",
         "hydratation": "hydration",
+        "hydratoin": "hydration",
+        "watre": "water",
+        "wter": "water",
+        "sllep": "sleep",
+        "slepp": "sleep",
+        "slep": "sleep",
+        "recoveryy": "recovery",
+        "nutrtion": "nutrition",
+        "nurtition": "nutrition",
         "suppliment": "supplement",
-        "suplement": "supplement"
+        "suplement": "supplement",
+        "protien": "protein",
+        "protine": "protein",
+        "workou": "workout"
     }
     
     # Food synonyms for better entity matching
@@ -400,10 +443,18 @@ class IntentClassifier:
             else:
                 expanded.append(word)
         return ' '.join(expanded)
+
+    @staticmethod
+    def apply_phrase_corrections(query: str) -> str:
+        """Expand concatenated phrases before word-level spelling correction."""
+        corrected = query.lower()
+        for wrong, right in sorted(IntentClassifier.PHRASE_CORRECTIONS.items(), key=lambda item: len(item[0]), reverse=True):
+            corrected = corrected.replace(wrong, right)
+        return corrected
     
     @staticmethod
     def correct_spelling(query: str) -> str:
-        """Correct common misspellings"""
+        """Correct common misspellings using curated exact lookup."""
         words = query.lower().split()
         corrected = []
         for word in words:
@@ -413,10 +464,30 @@ class IntentClassifier:
             else:
                 corrected.append(word)
         return ' '.join(corrected)
+
+    @staticmethod
+    def _build_spelling_vocabulary() -> List[str]:
+        """Build a compact vocabulary for fuzzy typo correction."""
+        vocabulary = set(IntentClassifier.COMMON_MISSPELLINGS.values())
+        vocabulary.update(IntentClassifier.ABBREVIATIONS.values())
+        vocabulary.update(IntentClassifier.PHRASE_CORRECTIONS.values())
+
+        for intent_data in IntentClassifier.INTENT_KEYWORDS.values():
+            vocabulary.update(intent_data.get("keywords", []))
+            vocabulary.update(intent_data.get("negative_keywords", []))
+            vocabulary.update(intent_data.get("canonical_examples", []))
+
+        vocabulary.update(IntentClassifier.FOOD_SYNONYMS.values())
+        vocabulary.update(IntentClassifier.EXERCISE_SYNONYMS.values())
+        vocabulary.update(IntentClassifier.GOAL_KEYWORDS.keys())
+        vocabulary.update(IntentClassifier.EXPERIENCE_KEYWORDS.keys())
+
+        return sorted(vocabulary)
     
     @staticmethod
     def preprocess_query(query: str) -> str:
         """Full preprocessing pipeline"""
+        query = IntentClassifier.apply_phrase_corrections(query)
         query = IntentClassifier.expand_abbreviations(query)
         query = IntentClassifier.correct_spelling(query)
         return query
@@ -436,6 +507,33 @@ class IntentClassifier:
             return "unknown", 0.0
 
         # High-confidence routing for common mixed phrases
+        if any(term in query_lower for term in ["supplement", "supplements", "creatine", "whey", "protein powder"]):
+            return "diet", 0.91
+        if "get in shape" in query_lower:
+            return "fitness", 0.86
+        if re.search(r"\blose\s+\d+\s+(pound|pounds|lb|lbs)\b", query_lower):
+            return "diet", 0.9
+        if "visible abs" in query_lower or ("abs" in query_lower and "how to" in query_lower):
+            return "diet", 0.88
+        if "lose fat but keep muscle" in query_lower or "body recomposition" in query_lower or ("lose fat" in query_lower and "muscle" in query_lower):
+            return "diet", 0.9
+        if "gaining weight while exercising" in query_lower or "gaining weight while work" in query_lower:
+            return "diet", 0.88
+        if "not seeing muscle growth" in query_lower or "muscle growth" in query_lower and "months" in query_lower:
+            return "fitness", 0.88
+        if "tired during workouts" in query_lower or "always tired during workouts" in query_lower:
+            return "health", 0.88
+        if any(term in query_lower for term in ["hydration", "dehydration", "water intake", "drink water"]):
+            return "health", 0.92
+        if "water" in query_lower and any(term in query_lower for term in ["training", "workout", "exercise", "sweat", "sweating"]):
+            return "health", 0.88
+        if "exercise" in query_lower and "weight loss" in query_lower:
+            return "fitness", 0.9
+        if ("calorie" in query_lower or "calories" in query_lower) and any(term in query_lower for term in ["burn", "burned", "burns"]):
+            if any(term in query_lower for term in ["run", "running", "walk", "walking", "cycle", "cycling", "cardio", "exercise", "workout", "training", "lift"]):
+                return "fitness", 0.92
+        if ("calorie" in query_lower or "calories" in query_lower) and any(term in query_lower for term in ["eat", "deficit", "maintenance", "weight loss", "fat loss", "lose weight", "gain weight", "bulk", "tdee", "bmr", "macro"]):
+            return "diet", 0.92
         if ("food" in query_lower or "foods" in query_lower) and ("protein" in query_lower or "calorie" in query_lower):
             return "food", 0.92
         if "calories in" in query_lower:
@@ -446,6 +544,8 @@ class IntentClassifier:
             return "diet", 0.92
         if re.search(r"\b\d+\s*day\b", query_lower) and "diet" in query_lower:
             return "diet", 0.92
+        if any(term in query_lower for term in ["depression", "anxiety", "sick", "ill", "illness", "injury", "chest pain"]) and any(term in query_lower for term in ["workout", "exercise", "training"]):
+            return "health", 0.9
         if "recipe" in query_lower or "how to cook" in query_lower or "how to make" in query_lower:
             return "food", 0.92
         if "calories" in query_lower and any(food in query_lower for food in ["chicken", "salmon", "egg", "rice", "oats", "banana", "almond", "broccoli"]):
