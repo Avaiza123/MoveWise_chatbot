@@ -4,7 +4,15 @@ import time
 from difflib import SequenceMatcher
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
+
+# Optional lightweight vector-based retrieval using TF-IDF (no LLM required)
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+except Exception:
+    TfidfVectorizer = None  # type: ignore
+    cosine_similarity = None  # type: ignore
 
 
 @dataclass
@@ -43,7 +51,11 @@ class KnowledgeStore:
         default_path = Path(__file__).resolve().parent / "knowledge_memory.json"
         self.file_path = file_path or default_path
         self.entries: Dict[str, KnowledgeEntry] = {}
+        self._vectorizer: Optional[Any] = None
+        self._matrix = None
         self._load()
+        # Build TF-IDF index if sklearn is available
+        self._build_tfidf_index()
 
     def _tokenize(self, text: str) -> List[str]:
         tokens = re.findall(r"\b[a-z0-9]+\b", (text or "").lower())
@@ -84,6 +96,8 @@ class KnowledgeStore:
         self.file_path.parent.mkdir(parents=True, exist_ok=True)
         payload = [asdict(entry) for entry in self.entries.values()]
         self.file_path.write_text(json.dumps(payload, ensure_ascii=True, indent=2), encoding="utf-8")
+        # Rebuild vector index after saving
+        self._build_tfidf_index()
 
     def add_or_update(
         self,
@@ -154,6 +168,41 @@ class KnowledgeStore:
                 best_score = blended
                 best_entry = entry
 
+        # If TF-IDF index available, compute vector similarity and blend it into score
+        if TfidfVectorizer is not None and self._vectorizer is not None and self._matrix is not None:
+            try:
+                qvec = self._vectorizer.transform([query])
+                sims = cosine_similarity(qvec, self._matrix)[0]
+                # iterate through stored entries in the same order as matrix
+                keys = list(self.entries.keys())
+                for idx, key in enumerate(keys):
+                    entry = self.entries.get(key)
+                    if not entry:
+                        continue
+                    # ignore generic or too-low-confidence entries
+                    if self._is_generic_answer(entry.answer) or entry.confidence < 0.35:
+                        continue
+                    vec_score = float(sims[idx])
+                    # find a lexical score baseline by recomputing lightweight overlap
+                    candidate_tokens = set(self._tokenize(entry.question)) | set(self._tokenize(" ".join(entry.tags)))
+                    overlap = len(query_tokens & candidate_tokens)
+                    union = len(query_tokens | candidate_tokens)
+                    jaccard = overlap / union if union else 0.0
+                    seq = SequenceMatcher(None, (query or "").lower(), (entry.question or "").lower()).ratio()
+                    lexical = (jaccard * 0.75) + (seq * 0.25)
+                    # Blend vector and lexical signals (favor vector for semantic matching)
+                    blended = (vec_score * 0.6) + (lexical * 0.4)
+                    # Boost if intents match
+                    if intent_norm != "unknown" and entry.intent == intent_norm:
+                        blended += 0.08
+
+                    if blended > best_score:
+                        best_score = blended
+                        best_entry = entry
+            except Exception:
+                # If vector path fails, fall back to lexical best_entry computed earlier
+                pass
+
         if not best_entry or best_score < min_score:
             return None
 
@@ -166,6 +215,37 @@ class KnowledgeStore:
             "tags": best_entry.tags,
             "intent": best_entry.intent,
         }
+
+    def _build_tfidf_index(self) -> int:
+        """Build a TF-IDF vector index for semantic retrieval. Returns number of indexed entries."""
+        if TfidfVectorizer is None:
+            self._vectorizer = None
+            self._matrix = None
+            return 0
+
+        texts = []
+        keys = []
+        for key, entry in self.entries.items():
+            # combine question+answer for richer context
+            text = f"{entry.question} \n {entry.answer}"
+            texts.append(text)
+            keys.append(key)
+
+        if not texts:
+            self._vectorizer = None
+            self._matrix = None
+            return 0
+
+        try:
+            vec = TfidfVectorizer(ngram_range=(1,2), max_features=4096)
+            mat = vec.fit_transform(texts)
+            self._vectorizer = vec
+            self._matrix = mat
+            return mat.shape[0]
+        except Exception:
+            self._vectorizer = None
+            self._matrix = None
+            return 0
 
     def ingest_web_cache(self, web_cache: Dict[str, Dict[str, str]]) -> int:
         if not isinstance(web_cache, dict):

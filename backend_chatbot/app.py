@@ -137,7 +137,7 @@ def knowledge_stats():
             "error_code": ERROR_CODES["INTERNAL_ERROR"]
         }), 500
 
-# Specific endpoints for each category
+# Backward-compatible category endpoints now reuse the same chat flow
 @app.route('/api/fitness', methods=['POST'])
 def fitness_query():
     """Endpoint for fitness-specific queries"""
@@ -150,7 +150,7 @@ def fitness_query():
                 "type": "error"
             }), 400
         
-        user_message = f"fitness {data['message']}"  # Prepend fitness context
+        user_message = data['message'].strip()
         user_id = data.get('user_id')
         response = chatbot.process_query(user_message, user_id)
         
@@ -175,7 +175,7 @@ def health_query():
                 "type": "error"
             }), 400
         
-        user_message = f"health {data['message']}"  # Prepend health context
+        user_message = data['message'].strip()
         user_id = data.get('user_id')
         response = chatbot.process_query(user_message, user_id)
         
@@ -200,7 +200,7 @@ def diet_query():
                 "type": "error"
             }), 400
         
-        user_message = f"diet {data['message']}"  # Prepend diet context
+        user_message = data['message'].strip()
         user_id = data.get('user_id')
         response = chatbot.process_query(user_message, user_id)
         
@@ -225,7 +225,7 @@ def food_query():
                 "type": "error"
             }), 400
         
-        user_message = f"food {data['message']}"  # Prepend food context
+        user_message = data['message'].strip()
         user_id = data.get('user_id')
         response = chatbot.process_query(user_message, user_id)
         

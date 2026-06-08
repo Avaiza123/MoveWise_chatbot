@@ -5,6 +5,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from app.chatbot_engine import FitnessChatbot
@@ -35,6 +36,12 @@ class ChatRequest(BaseModel):
     user_id: Optional[str] = None
 
 
+def _json_response(body: dict, success_status: int = 200):
+    """Return chatbot responses as JSON without treating expected misses as transport errors."""
+    status_code = success_status if body.get("success", False) else 200
+    return JSONResponse(status_code=status_code, content=body)
+
+
 @app.get("/health")
 def health_check():
     return {
@@ -48,9 +55,9 @@ def health_check():
 def chat(payload: ChatRequest):
     user_message = (payload.message or "").strip()
     if not user_message:
-        raise HTTPException(
+        return JSONResponse(
             status_code=400,
-            detail={
+            content={
                 "success": False,
                 "message": "Message cannot be empty",
                 "type": "error",
@@ -62,10 +69,7 @@ def chat(payload: ChatRequest):
 
     response = chatbot.process_query(user_message, payload.user_id)
     body = response.to_dict()
-
-    if not response.success:
-        raise HTTPException(status_code=400, detail=body)
-    return body
+    return _json_response(body)
 
 
 @app.get("/api/greeting")
@@ -115,9 +119,9 @@ def knowledge_stats():
 def _category_query(prefix: str, payload: ChatRequest):
     user_message = (payload.message or "").strip()
     if not user_message:
-        raise HTTPException(
+        return JSONResponse(
             status_code=400,
-            detail={
+            content={
                 "success": False,
                 "message": "Please provide a 'message' field",
                 "type": "error",
@@ -127,9 +131,7 @@ def _category_query(prefix: str, payload: ChatRequest):
 
     response = chatbot.process_query(f"{prefix} {user_message}", payload.user_id)
     body = response.to_dict()
-    if not response.success:
-        raise HTTPException(status_code=400, detail=body)
-    return body
+    return _json_response(body)
 
 
 @app.post("/api/fitness")

@@ -30,7 +30,7 @@ class IntentClassifier:
         "fitness": {
             "keywords": [
                 "exercise", "workout", "training", "gym", "fitness", "strength", "cardio", 
-                "hiit", "muscles", "bodybuilding", "running", "cycling", "swimming", "push up", 
+                "hiit", "muscles", "bodybuilding", "running", "cycling", "swimming", "push up", "pushups", "push ups", "push-ups", 
                 "squat", "deadlift", "bench press", "rep", "set", "weights", "dumbbells",
                 "reps", "sets", "routine", "program", "workouts", "athlete", "lifting",
                 "crossfit", "yoga", "pilates", "stretching", "warm up", "cool down",
@@ -52,7 +52,7 @@ class IntentClassifier:
             ],
             "patterns": [
                 r"how.*exercise", r"best.*workout", r".*training.*routine", r".*fitness.*",
-                r"how.*(do|perform).*\b(push up|squat|deadlift|plank|burpee|lunge)\b",
+                r"how.*(do|perform).*(\bpush up\b|\bpushups\b|\bpush ups\b|\bpush-ups\b|\bsquat\b|\bdeadlift\b|\bplank\b|\bburpee\b|\blunge\b)",
                 r"(build|gain|increase).*(muscle|strength|mass)",
                 r"(lose|burn|reduce).*(fat|weight).*exercise",
                 r"(beginner|start).*\b(workout|exercise|gym)\b",
@@ -521,6 +521,8 @@ class IntentClassifier:
             return "diet", 0.88
         if "not seeing muscle growth" in query_lower or "muscle growth" in query_lower and "months" in query_lower:
             return "fitness", 0.88
+        if any(term in query_lower for term in ["motivat", "stay motivated", "no motivation", "lost motivation", "dreading workouts"]):
+            return "fitness", 0.84
         if "tired during workouts" in query_lower or "always tired during workouts" in query_lower:
             return "health", 0.88
         if any(term in query_lower for term in ["hydration", "dehydration", "water intake", "drink water"]):
@@ -638,7 +640,7 @@ class IntentClassifier:
         entities = {}
         
         # Exercise names (with synonyms)
-        exercises = ["push up", "squat", "deadlift", "bench press", "running", "cycling", 
+        exercises = ["push up", "pushups", "push ups", "push-ups", "squat", "deadlift", "bench press", "running", "cycling", 
                     "swimming", "yoga", "pilates", "jump rope", "burpee", "plank",
                     "pull up", "row", "overhead press", "lunge", "dip", "leg press",
                     "crunch", "russian twist", "hip thrust", "farmer walk", "face pull",

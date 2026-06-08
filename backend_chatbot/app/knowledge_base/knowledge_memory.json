@@ -791,5 +791,54 @@
     ],
     "intent": "food",
     "updated_at": 1780078213.533366
+  },
+  {
+    "key": "health::how many hours should i sleep",
+    "question": "how many hours should i sleep",
+    "answer": "Most adults do best with 7-9 hours per night of sleep per night.\n\nWhy it matters: Sleep is crucial for recovery, immune function, and mental health\n\nSleep hygiene basics:\n\u2022 Maintain consistent sleep schedule\n\u2022 Keep bedroom dark and cool\n\u2022 Avoid screens 30 minutes before bed\n\u2022 Limit caffeine after 2 PM\n\u2022 Exercise regularly (but not before bed)\n\u2022 Keep naps short if you struggle with insomnia\n\u2022 Use a wind-down routine: dim lights, stretch, breathe slowly\n\nExtra sleep targets:\n\u2022 Light sleep: Helps consolidate memories and clear metabolic waste\n\u2022 Deep sleep: Critical for physical recovery and immune function\n\u2022 REM sleep: Important for emotional regulation and brain development",
+    "source": "local",
+    "confidence": 0.7797132616487455,
+    "tags": [
+      "health"
+    ],
+    "intent": "health",
+    "updated_at": 1780343701.128213
+  },
+  {
+    "key": "diet::meal timing",
+    "question": "meal timing",
+    "answer": "Meal timing is most useful when it supports training, recovery, and appetite control:\n\n\u2022 Pre-workout: choose an easy-to-digest carb + protein meal 1-3 hours before training\n\u2022 Post-workout: get protein and carbs within a few hours to support recovery\n\u2022 Protein: Distribute throughout day, 20-40g per meal for optimal muscle protein synthesis (MPS). Post-workout window is valuable but total daily intake matters most.\n\u2022 Carbs: especially helpful around hard sessions for glycogen replenishment\n\nSimple examples:\n\u2022 Pre-workout: yogurt + banana, oats + whey, or rice + chicken\n\u2022 Post-workout: chicken and rice, protein shake + fruit, or eggs + toast",
+    "source": "local",
+    "confidence": 0.4716666666666667,
+    "tags": [
+      "diet",
+      "meal_timing"
+    ],
+    "intent": "diet",
+    "updated_at": 1780343779.1815014
+  },
+  {
+    "key": "fitness::what is progressive overload",
+    "question": "what is progressive overload",
+    "answer": "Progressive overload is how you keep improving over time:\n\n\u2022 Add a little weight, reps, or sets when performance is stable\n\u2022 Keep form strict so the stress stays on the target muscles\n\u2022 Use small jumps, especially on upper-body lifts\n\u2022 Deload every few weeks if fatigue is building\n\nCore principle: Gradually increase weight, reps, or intensity to continue seeing results\nRecovery principle: Rest is when muscles grow and repair; ensure 7-9 hours sleep\nForm principle: Perfect form with lighter weight beats poor form with heavy weight",
+    "source": "local",
+    "confidence": 0.725,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "fitness",
+    "updated_at": 1780343796.9357526
+  },
+  {
+    "key": "fitness::give me workout plan for my gym",
+    "question": "give me workout plan for my gym",
+    "answer": "To set a workout routine, keep it simple:\n\n\u2022 3 days strength (full body)\n\u2022 2 days cardio\n\u2022 1 to 2 recovery days\n\u2022 Keep sessions 30 to 45 minutes\n\nA sample week is: Mon strength, Tue cardio, Wed rest, Thu strength, Fri cardio, Sat strength, Sun rest.",
+    "source": "local",
+    "confidence": 0.6071428571428572,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "fitness",
+    "updated_at": 1780822504.4962158
   }
 ]

@@ -101,10 +101,16 @@ class FitnessChatbot:
                 response = self._handle_food_query(routing_query, entities)
             else:
                 response = ChatbotResponse(
-                    success=False,
-                    message=RESPONSE_TEMPLATES["unknown"][0],
+                    success=True,
+                    message=(
+                        f"{RESPONSE_TEMPLATES['unknown'][0]}\n\n"
+                        "I can still help with this in one chat thread. Try asking for a workout explanation, meal timing advice, sleep help, hydration tips, or a full plan."
+                    ),
+                    data={
+                        "intent": "unknown",
+                        "source": "general_chat",
+                    },
                     response_type=ResponseType.INFO,
-                    error_code=ERROR_CODES["INTENT_NOT_FOUND"]
                 )
 
             # If local handler produced a generic answer, try web lookup only for very low-confidence cases.
@@ -412,6 +418,28 @@ class FitnessChatbot:
                 success=True,
                 message=FITNESS_KNOWLEDGE["faqs"]["q_walking_enough_exercise"]["answer"],
                 data=FITNESS_KNOWLEDGE["faqs"]["q_walking_enough_exercise"],
+                response_type=ResponseType.SUCCESS,
+            )
+
+        if any(term in query_lower for term in ["motivat", "stay motivated", "no motivation", "lost motivation", "dreading workouts"]):
+            motivation = FITNESS_KNOWLEDGE.get("motivation_types", {})
+            blocks = FITNESS_KNOWLEDGE.get("overcoming_common_mental_blocks", {})
+            behaviors = FITNESS_KNOWLEDGE.get("behavioral_strategies", {})
+            return ChatbotResponse(
+                success=True,
+                message=(
+                    "The most sustainable motivation comes from building a system, not waiting to feel ready.\n\n"
+                    "What helps most:\n"
+                    f"• Intrinsic motivation: {motivation.get('intrinsic', 'Focus on the process and how training makes you feel.')}\n"
+                    f"• 5-minute rule: {blocks.get('no_motivation', 'Commit to 5 minutes only, then decide whether to continue.')}\n"
+                    f"• Habit stacking: {behaviors.get('habit_stacking', 'Attach training to an existing habit.')}\n"
+                    f"• Environment design: {', '.join(behaviors.get('environment_design', [])) if behaviors.get('environment_design') else 'Make the workout easier to start.'}\n\n"
+                    "If you want, I can turn this into a simple weekly plan or a 10-minute restart routine."
+                ),
+                data={
+                    "focus": "motivation",
+                    "source": "local",
+                },
                 response_type=ResponseType.SUCCESS,
             )
 
@@ -913,12 +941,13 @@ class FitnessChatbot:
         if any(term in query_lower for term in ["pre workout", "post workout", "meal timing", "when to eat", "around workouts"]):
             protein = DIET_KNOWLEDGE["nutrition_basics"]["macronutrients"]["protein"]
             carbs = DIET_KNOWLEDGE["nutrition_basics"]["macronutrients"]["carbohydrates"]
+            protein_timing = protein.get("timing") or protein.get("best_time") or "Spread protein across the day in several meals."
             return ChatbotResponse(
                 success=True,
                 message="Meal timing is most useful when it supports training, recovery, and appetite control:\n\n"
                        "• Pre-workout: choose an easy-to-digest carb + protein meal 1-3 hours before training\n"
                        "• Post-workout: get protein and carbs within a few hours to support recovery\n"
-                       "• Protein: " + protein['timing'] + "\n"
+                       "• Protein: " + protein_timing + "\n"
                        "• Carbs: especially helpful around hard sessions for glycogen replenishment\n\n"
                        "Simple examples:\n"
                        "• Pre-workout: yogurt + banana, oats + whey, or rice + chicken\n"
