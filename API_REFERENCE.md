@@ -2,9 +2,7 @@
 
 Complete API documentation for the Fitness Chatbot.
 
-## Base URL
-```
-http://localhost:5000
+
 ```
 
 ## Authentication
@@ -445,5 +443,4 @@ For API issues or questions, refer to:
 
 ---
 
-**Last Updated:** 2024
-**Status:** Production Ready ✅
+
