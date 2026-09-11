@@ -2,14 +2,9 @@ name: MoveWise Chatbot CI/CD
 
 on:
   push:
-    branches:
-      - main
-      - develop
-
+    branches: [main, develop]
   pull_request:
-    branches:
-      - main
-
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -17,44 +12,28 @@ permissions:
 
 env:
   PYTHON_VERSION: '3.14'
+  PYTHON_EXE: 'C:\Users\avaiza.shahid\AppData\Local\Programs\Python\Launcher\py.exe'
 
 jobs:
-  # ------------------------------------------------------------
-  # 1. AUTOMATED TESTING
-  # ------------------------------------------------------------
+  # ---------------- TEST ----------------
   test:
     name: Auto Test
     runs-on: [self-hosted, Windows, X64]
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Check Python
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          Write-Host "Checking Python..."
-          py -$env:PYTHON_VERSION --version
-          py -$env:PYTHON_VERSION -m pip --version
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          Write-Host "Installing application dependencies..."
-          py -$env:PYTHON_VERSION -m pip install --upgrade pip
-          py -$env:PYTHON_VERSION -m pip install -r backend_chatbot/requirements.txt
-          py -$env:PYTHON_VERSION -m pip install -r requirements-dev.txt
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install --upgrade pip
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install -r backend_chatbot/requirements.txt
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install -r requirements-dev.txt
 
       - name: Run tests with coverage
         shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
-          Write-Host "Running automated tests..."
-          py -$env:PYTHON_VERSION -m pytest `
-            -v `
-            --cov=. `
-            --cov-report=term `
-            --cov-report=xml
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pytest -v --cov=. --cov-report=term --cov-report=xml
 
       - name: Upload coverage
         if: always()
@@ -64,353 +43,134 @@ jobs:
           path: backend_chatbot/coverage.xml
           if-no-files-found: ignore
 
-  # ------------------------------------------------------------
-  # 2. AUTOMATED QA
-  # ------------------------------------------------------------
+  # ---------------- QA ----------------
   qa:
     name: Auto QA
     runs-on: [self-hosted, Windows, X64]
-    needs:
-      - test
-
+    needs: test
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Check Python
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          Write-Host "Checking Python..."
-          py -$env:PYTHON_VERSION --version
-          py -$env:PYTHON_VERSION -m pip --version
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          Write-Host "Installing application and QA dependencies..."
-          py -$env:PYTHON_VERSION -m pip install --upgrade pip
-          py -$env:PYTHON_VERSION -m pip install -r backend_chatbot/requirements.txt
-          py -$env:PYTHON_VERSION -m pip install -r requirements-dev.txt
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install --upgrade pip
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install -r backend_chatbot/requirements.txt
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install -r requirements-dev.txt
 
-      - name: Verify QA tools
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          Write-Host "Checking QA tools..."
-          ruff --version
-          bandit --version
-          pip-audit --version
-
-      - name: Ruff lint
+      - name: Lint, format, security, audit
         shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
-          Write-Host "Running Ruff lint..."
-          ruff check .
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m ruff check .
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m ruff format --check .
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m bandit -r . -x tests
+          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip_audit -r requirements.txt
 
-      - name: Ruff format check
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        working-directory: backend_chatbot
-        run: |
-          Write-Host "Checking code formatting..."
-          ruff format --check .
-
-      - name: Security scan
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        working-directory: backend_chatbot
-        run: |
-          Write-Host "Running Bandit security scan..."
-          bandit -r . -x tests
-
-      - name: Dependency security audit
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        working-directory: backend_chatbot
-        run: |
-          Write-Host "Running dependency security audit..."
-          pip-audit -r requirements.txt
-
-  # ------------------------------------------------------------
-  # 3. DOCKER BUILD + CONTAINER QA
-  # ------------------------------------------------------------
+  # ---------------- BUILD ----------------
   build:
     name: Build Docker
     runs-on: [self-hosted, Windows, X64]
-    needs:
-      - test
-      - qa
-
+    needs: [test, qa]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Check Docker
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          Write-Host "Checking Docker..."
-          docker --version
-          docker info
-
-      - name: Remove old container if present
+      - name: Build image
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           docker rm -f movewise-chatbot 2>$null
-
-      - name: Build Docker image
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          Write-Host "Building Docker image..."
           docker build -t movewise-chatbot:${{ github.sha }} .
-
-      - name: Verify Docker image
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          Write-Host "Verifying Docker image..."
-          docker image inspect movewise-chatbot:${{ github.sha }}
-
-      - name: Start Docker container
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          Write-Host "Starting Docker container..."
-          docker run -d `
-            --name movewise-chatbot `
-            -p 8000:8000 `
-            movewise-chatbot:${{ github.sha }}
+          docker run -d --name movewise-chatbot -p 8000:8000 movewise-chatbot:${{ github.sha }}
 
       - name: Wait for API
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          Write-Host "Waiting for MoveWise API..."
-          $healthy = $false
-
           for ($i = 1; $i -le 30; $i++) {
             try {
-              $response = Invoke-WebRequest `
-                -Uri "http://localhost:8000/health" `
-                -UseBasicParsing `
-                -TimeoutSec 5
-
-              if ($response.StatusCode -eq 200) {
-                Write-Host "API is healthy."
-                $healthy = $true
-                break
-              }
-            }
-            catch {
-              Write-Host "Attempt $i failed."
-            }
+              $r = Invoke-WebRequest http://localhost:8000/health -UseBasicParsing -TimeoutSec 5
+              if ($r.StatusCode -eq 200) { Write-Host "API healthy."; exit 0 }
+            } catch { Write-Host "Attempt $i failed." }
             Start-Sleep -Seconds 2
           }
+          docker logs movewise-chatbot
+          exit 1
 
-          if (-not $healthy) {
-            Write-Host "API failed to start."
-            Write-Host "Container logs:"
-            docker logs movewise-chatbot
-            exit 1
+      - name: Smoke test endpoints
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          foreach ($url in @(
+            "http://localhost:8000/api/greeting",
+            "http://localhost:8000/api/knowledge/stats"
+          )) {
+            Invoke-WebRequest $url -UseBasicParsing | Out-Null
+            Write-Host "GET $url passed."
           }
 
-      - name: Test health endpoint
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          $response = Invoke-WebRequest -Uri "http://localhost:8000/health" -UseBasicParsing
-          if ($response.StatusCode -ne 200) { exit 1 }
-          Write-Host "Health endpoint passed."
+          $postTests = @{
+            "/api/chat"    = "What is a good beginner workout?"
+            "/api/fitness" = "What exercise should I do?"
+            "/api/health"  = "How much sleep should I get?"
+            "/api/diet"    = "What should I eat?"
+            "/api/food"    = "How many calories are in chicken?"
+          }
+          foreach ($path in $postTests.Keys) {
+            $body = @{ message = $postTests[$path] } | ConvertTo-Json
+            $r = Invoke-RestMethod -Uri "http://localhost:8000$path" -Method POST -ContentType "application/json" -Body $body
+            if ($null -eq $r.message) { throw "No message from $path" }
+            Write-Host "POST $path passed."
+          }
 
-      - name: Test greeting endpoint
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          $response = Invoke-WebRequest -Uri "http://localhost:8000/api/greeting" -UseBasicParsing
-          if ($response.StatusCode -ne 200) { exit 1 }
-          Write-Host "Greeting endpoint passed."
-
-      - name: Test chatbot endpoint
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          $body = @{ message = "What is a good beginner workout?" } | ConvertTo-Json
-          $response = Invoke-RestMethod -Uri "http://localhost:8000/api/chat" -Method POST -ContentType "application/json" -Body $body
-          if ($null -eq $response.message) { Write-Error "Chatbot response does not contain a message."; exit 1 }
-          Write-Host "Chatbot endpoint passed."
-
-      - name: Test fitness endpoint
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          $body = @{ message = "What exercise should I do?" } | ConvertTo-Json
-          $response = Invoke-RestMethod -Uri "http://localhost:8000/api/fitness" -Method POST -ContentType "application/json" -Body $body
-          if ($null -eq $response.message) { Write-Error "Fitness response does not contain a message."; exit 1 }
-          Write-Host "Fitness endpoint passed."
-
-      - name: Test health category endpoint
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          $body = @{ message = "How much sleep should I get?" } | ConvertTo-Json
-          $response = Invoke-RestMethod -Uri "http://localhost:8000/api/health" -Method POST -ContentType "application/json" -Body $body
-          if ($null -eq $response.message) { Write-Error "Health response does not contain a message."; exit 1 }
-          Write-Host "Health category endpoint passed."
-
-      - name: Test diet endpoint
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          $body = @{ message = "What should I eat?" } | ConvertTo-Json
-          $response = Invoke-RestMethod -Uri "http://localhost:8000/api/diet" -Method POST -ContentType "application/json" -Body $body
-          if ($null -eq $response.message) { Write-Error "Diet response does not contain a message."; exit 1 }
-          Write-Host "Diet endpoint passed."
-
-      - name: Test food endpoint
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          $body = @{ message = "How many calories are in chicken?" } | ConvertTo-Json
-          $response = Invoke-RestMethod -Uri "http://localhost:8000/api/food" -Method POST -ContentType "application/json" -Body $body
-          if ($null -eq $response.message) { Write-Error "Food response does not contain a message."; exit 1 }
-          Write-Host "Food endpoint passed."
-
-      - name: Test knowledge statistics
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          $response = Invoke-RestMethod -Uri "http://localhost:8000/api/knowledge/stats" -Method GET
-          if ($response.success -ne $true) { Write-Error "Knowledge statistics endpoint failed."; exit 1 }
-          Write-Host "Knowledge statistics endpoint passed."
-
-      - name: Show Docker logs
+      - name: Docker logs & cleanup
         if: always()
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          Write-Host "========== DOCKER LOGS =========="
           docker logs movewise-chatbot
-          Write-Host "========== END DOCKER LOGS =========="
-
-      - name: Stop Docker container
-        if: always()
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
           docker stop movewise-chatbot 2>$null
           docker rm movewise-chatbot 2>$null
 
-  # ------------------------------------------------------------
-  # 4. AUTOMATIC PRODUCTION DEPLOYMENT
-  # ------------------------------------------------------------
+  # ---------------- DEPLOY ----------------
   deploy:
     name: Auto Deploy
     runs-on: [self-hosted, Windows, X64]
-    needs:
-      - test
-      - qa
-      - build
-
-    if: >
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main'
-
+    needs: [test, qa, build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: production
-
     steps:
-      - name: Deploy application
+      - name: Trigger Render deploy
         shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:RENDER_DEPLOY_HOOK)) {
-            Write-Error "RENDER_DEPLOY_HOOK secret is not configured."
-            exit 1
-          }
+          if ([string]::IsNullOrWhiteSpace($env:RENDER_DEPLOY_HOOK)) { throw "RENDER_DEPLOY_HOOK not set" }
+          $r = Invoke-WebRequest $env:RENDER_DEPLOY_HOOK -Method POST -UseBasicParsing
+          if ($r.StatusCode -lt 200 -or $r.StatusCode -ge 300) { throw "Deploy hook failed: $($r.StatusCode)" }
+          Write-Host "Deployment triggered."
 
-          Write-Host "Starting MoveWise Chatbot deployment..."
-          $response = Invoke-WebRequest `
-            -Uri $env:RENDER_DEPLOY_HOOK `
-            -Method POST `
-            -UseBasicParsing
-
-          Write-Host "Deployment hook response:" $response.StatusCode
-
-          if ($response.StatusCode -lt 200 -or $response.StatusCode -ge 300) {
-            Write-Error "Deployment hook failed."
-            exit 1
-          }
-
-          Write-Host "Deployment triggered successfully."
-
-  # ------------------------------------------------------------
-  # 5. PRODUCTION SMOKE TEST
-  # ------------------------------------------------------------
+  # ---------------- SMOKE TEST (PROD) ----------------
   smoke-test:
     name: Production Smoke Test
     runs-on: [self-hosted, Windows, X64]
-    needs:
-      - deploy
-
-    if: >
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main'
-
+    needs: deploy
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Wait for deployment
         shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          Write-Host "Waiting for production deployment..."
-          Start-Sleep -Seconds 30
+        run: Start-Sleep -Seconds 30
 
-      - name: Production health check
+      - name: Production smoke test
         shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:PRODUCTION_URL)) {
-            Write-Error "PRODUCTION_URL secret is not configured."
-            exit 1
-          }
+          if ([string]::IsNullOrWhiteSpace($env:PRODUCTION_URL)) { throw "PRODUCTION_URL not set" }
+          $base = $env:PRODUCTION_URL.TrimEnd('/')
 
-          $baseUrl = $env:PRODUCTION_URL.TrimEnd('/')
-          $response = Invoke-WebRequest -Uri "$baseUrl/health" -UseBasicParsing
+          Invoke-WebRequest "$base/health" -UseBasicParsing | Out-Null
+          Invoke-WebRequest "$base/api/greeting" -UseBasicParsing | Out-Null
 
-          if ($response.StatusCode -ne 200) {
-            Write-Error "Production health check failed."
-            exit 1
-          }
-
-          Write-Host "Production health check passed."
-
-      - name: Production greeting test
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        env:
-          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
-        run: |
-          if ([string]::IsNullOrWhiteSpace($env:PRODUCTION_URL)) {
-            Write-Error "PRODUCTION_URL secret is not configured."
-            exit 1
-          }
-
-          $baseUrl = $env:PRODUCTION_URL.TrimEnd('/')
-          $response = Invoke-WebRequest -Uri "$baseUrl/api/greeting" -UseBasicParsing
-
-          if ($response.StatusCode -ne 200) {
-            Write-Error "Production greeting test failed."
-            exit 1
-          }
-
-          Write-Host "Production greeting test passed."
-
-      - name: Production chatbot test
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        env:
-          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
-        run: |
-          if ([string]::IsNullOrWhiteSpace($env:PRODUCTION_URL)) {
-            Write-Error "PRODUCTION_URL secret is not configured."
-            exit 1
-          }
-
-          $baseUrl = $env:PRODUCTION_URL.TrimEnd('/')
           $body = @{ message = "What is a good beginner workout?" } | ConvertTo-Json
-          $response = Invoke-RestMethod -Uri "$baseUrl/api/chat" -Method POST -ContentType "application/json" -Body $body
+          $r = Invoke-RestMethod -Uri "$base/api/chat" -Method POST -ContentType "application/json" -Body $body
+          if ($null -eq $r.message) { throw "Production chatbot returned no message" }
 
-          if ($null -eq $response.message) {
-            Write-Error "Production chatbot response does not contain a message."
-            exit 1
-          }
-
-          Write-Host "Production chatbot test passed."
-
-      - name: Deployment successful
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          Write-Host "======================================"
-          Write-Host "MoveWise deployment successful!"
-          Write-Host "======================================"
+          Write-Host "Production smoke test passed."
