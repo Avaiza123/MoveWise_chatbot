@@ -36,6 +36,11 @@ jobs:
           & $env:PYTHON_EXE --version
 
           $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
+
+          if (Test-Path $venv) {
+            Remove-Item $venv -Recurse -Force
+          }
+
           & $env:PYTHON_EXE -m venv $venv
 
           if ($LASTEXITCODE -ne 0) {
@@ -48,22 +53,32 @@ jobs:
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
           & $python -m pip install --upgrade pip
-          & $python -m pip install -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
-          & $python -m pip install -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
-
           if ($LASTEXITCODE -ne 0) {
-            throw "Dependency installation failed."
+            throw "pip upgrade failed."
           }
 
-          & $python -c "import flask, fastapi, pytest; print('Dependencies OK')"
+          & $python -m pip install -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Backend dependency installation failed."
+          }
+
+          & $python -m pip install -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Development dependency installation failed."
+          }
+
+          & $python -c "import flask, fastapi, sklearn, pytest; print('Dependencies OK')"
 
       - name: Run tests
         shell: powershell -ExecutionPolicy Bypass -File {0}
-        working-directory: backend_chatbot
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
-          & $python -m pytest -v --cov=. --cov-report=term --cov-report=xml
+          & $python -m pytest `
+            -v `
+            --cov=backend_chatbot `
+            --cov-report=term `
+            --cov-report=xml:coverage.xml
 
           if ($LASTEXITCODE -ne 0) {
             throw "Tests failed."
@@ -74,7 +89,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: backend_chatbot/coverage.xml
+          path: coverage.xml
           if-no-files-found: ignore
 
       - name: Cleanup
@@ -82,6 +97,7 @@ jobs:
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
+
           if (Test-Path $venv) {
             Remove-Item $venv -Recurse -Force
           }
@@ -99,29 +115,43 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup QA environment
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          & $env:PYTHON_EXE -m venv "$env:GITHUB_WORKSPACE\$env:VENV"
+          $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
+
+          if (Test-Path $venv) {
+            Remove-Item $venv -Recurse -Force
+          }
+
+          & $env:PYTHON_EXE -m venv $venv
 
           if ($LASTEXITCODE -ne 0) {
             throw "QA virtual environment creation failed."
           }
 
-          $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
+          $python = Join-Path $venv "Scripts\python.exe"
 
           & $python -m pip install --upgrade pip
-          & $python -m pip install -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
-          & $python -m pip install -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
-
           if ($LASTEXITCODE -ne 0) {
-            throw "QA dependency installation failed."
+            throw "QA pip upgrade failed."
+          }
+
+          & $python -m pip install -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
+          if ($LASTEXITCODE -ne 0) {
+            throw "QA backend dependency installation failed."
+          }
+
+          & $python -m pip install -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
+          if ($LASTEXITCODE -ne 0) {
+            throw "QA development dependency installation failed."
           }
 
       - name: Ruff
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
+
           & $python -m ruff check .
 
           if ($LASTEXITCODE -ne 0) {
@@ -129,10 +159,11 @@ jobs:
           }
 
       - name: Format check
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
+
           & $python -m ruff format --check .
 
           if ($LASTEXITCODE -ne 0) {
@@ -140,7 +171,7 @@ jobs:
           }
 
       - name: Security scan
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
@@ -152,7 +183,7 @@ jobs:
           }
 
       - name: Dependency audit
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
@@ -165,9 +196,10 @@ jobs:
 
       - name: Cleanup
         if: always()
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
+
           if (Test-Path $venv) {
             Remove-Item $venv -Recurse -Force
           }
@@ -185,7 +217,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build image
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           docker build -t movewise-chatbot:${{ github.sha }} .
 
@@ -194,7 +226,7 @@ jobs:
           }
 
       - name: Run container
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           docker rm -f movewise-chatbot 2>$null
 
@@ -208,7 +240,7 @@ jobs:
           }
 
       - name: Runtime smoke test
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $ready = $false
 
@@ -267,12 +299,13 @@ jobs:
       - name: Docker logs
         if: always()
         continue-on-error: true
-        shell: powershell
-        run: docker logs movewise-chatbot
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          docker logs movewise-chatbot
 
       - name: Cleanup
         if: always()
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           docker stop movewise-chatbot 2>$null
           docker rm movewise-chatbot 2>$null
@@ -293,7 +326,7 @@ jobs:
 
     steps:
       - name: Deploy to Render
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
@@ -325,7 +358,7 @@ jobs:
 
     steps:
       - name: Verify production
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
