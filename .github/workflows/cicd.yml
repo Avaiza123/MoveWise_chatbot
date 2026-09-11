@@ -31,7 +31,7 @@ jobs:
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           if (-not (Test-Path $env:PYTHON_EXE)) {
-            throw "Python 3.14 not found."
+            throw "Python 3.14 not found at $env:PYTHON_EXE"
           }
 
           $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
@@ -42,6 +42,10 @@ jobs:
 
           & $env:PYTHON_EXE -m venv $venv
 
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create virtual environment."
+          }
+
       - name: Install dependencies
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
@@ -49,26 +53,89 @@ jobs:
 
           & $python -m pip install --upgrade pip
 
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to upgrade pip."
+          }
+
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
 
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install backend dependencies."
+          }
+
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install development dependencies."
+          }
+
+      - name: Verify test environment
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
+
+          Set-Location $env:GITHUB_WORKSPACE
+
+          Write-Host "========================================"
+          Write-Host "Python version"
+          Write-Host "========================================"
+
+          & $python --version
+
+          Write-Host ""
+          Write-Host "========================================"
+          Write-Host "Pytest version"
+          Write-Host "========================================"
+
+          & $python -m pytest --version
+
+          Write-Host ""
+          Write-Host "========================================"
+          Write-Host "Working directory"
+          Write-Host "========================================"
+
+          Get-Location
 
       - name: Run tests
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
+          Set-Location $env:GITHUB_WORKSPACE
+
+          Write-Host ""
+          Write-Host "========================================"
+          Write-Host "RUNNING PYTEST"
+          Write-Host "========================================"
+
           & $python -m pytest `
             -v `
+            --tb=long `
+            --capture=no `
             --cov=backend_chatbot `
             --cov-report=term `
             --cov-report=xml:coverage.xml
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Tests failed."
+          $exitCode = $LASTEXITCODE
+
+          Write-Host ""
+          Write-Host "Pytest exit code: $exitCode"
+
+          if ($exitCode -ne 0) {
+            Write-Host ""
+            Write-Host "========================================"
+            Write-Host "PYTEST FAILED"
+            Write-Host "========================================"
+
+            exit $exitCode
           }
+
+          Write-Host ""
+          Write-Host "========================================"
+          Write-Host "ALL TESTS PASSED"
+          Write-Host "========================================"
 
       - name: Upload coverage
         if: always()
@@ -112,15 +179,31 @@ jobs:
 
           & $env:PYTHON_EXE -m venv $venv
 
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to create QA virtual environment."
+          }
+
           $python = Join-Path $venv "Scripts\python.exe"
 
           & $python -m pip install --upgrade pip
 
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to upgrade pip."
+          }
+
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
 
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install backend dependencies."
+          }
+
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to install QA dependencies."
+          }
 
       - name: Security scan
         shell: powershell -ExecutionPolicy Bypass -File {0}
@@ -162,7 +245,6 @@ jobs:
           if (Test-Path $venv) {
             Remove-Item $venv -Recurse -Force
           }
-
 
 
   # ==========================================================
@@ -240,10 +322,24 @@ jobs:
       - name: Deploy Docker container
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
+          Write-Host "========================================"
+          Write-Host "BUILDING PRODUCTION DOCKER IMAGE"
+          Write-Host "========================================"
+
           docker build -t movewise-chatbot:latest .
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "Docker build failed."
+          }
+
+          Write-Host ""
+          Write-Host "Stopping previous container..."
 
           docker stop movewise-chatbot 2>$null
           docker rm movewise-chatbot 2>$null
+
+          Write-Host ""
+          Write-Host "Starting new container..."
 
           docker run -d `
             --name movewise-chatbot `
@@ -251,24 +347,43 @@ jobs:
             -p 8000:8000 `
             movewise-chatbot:latest
 
+          if ($LASTEXITCODE -ne 0) {
+            throw "Docker container failed to start."
+          }
+
+          Write-Host ""
+          Write-Host "Waiting for application..."
           Start-Sleep -Seconds 10
+
+          Write-Host ""
+          Write-Host "Checking application health..."
 
           try {
             $response = Invoke-WebRequest `
               -Uri "http://localhost:8000/health" `
-              -UseBasicParsing
+              -UseBasicParsing `
+              -TimeoutSec 10
 
             if ($response.StatusCode -eq 200) {
-              Write-Host "================================"
+              Write-Host ""
+              Write-Host "========================================"
               Write-Host "AUTO DEPLOY SUCCESSFUL"
-              Write-Host "http://localhost:8000"
-              Write-Host "================================"
+              Write-Host "========================================"
+              Write-Host "Application: http://localhost:8000"
+              Write-Host "Health:      http://localhost:8000/health"
+              Write-Host "========================================"
             }
             else {
-              throw "Health check failed."
+              throw "Health check returned HTTP $($response.StatusCode)."
             }
           }
           catch {
+            Write-Host ""
+            Write-Host "========================================"
+            Write-Host "AUTO DEPLOY FAILED"
+            Write-Host "========================================"
+
             docker logs movewise-chatbot
-            throw "AUTO DEPLOY FAILED."
+
+            throw
           }
