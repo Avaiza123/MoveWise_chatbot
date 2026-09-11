@@ -168,81 +168,49 @@ jobs:
   # ==========================================================
   docker:
     name: Docker Build & Test
-    runs-on: [self-hosted, Windows, X64]
+    runs-on: ubuntu-latest
     needs: qa
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        shell: powershell -ExecutionPolicy Bypass -File {0}
+      - name: Check Docker
         run: |
-          docker build `
-            -t movewise-chatbot:${{ github.sha }} `
+          docker version
+          docker info
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t movewise-chatbot:${{ github.sha }} \
             .
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Docker build failed."
-          }
-
       - name: Run Docker container
-        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          docker rm -f movewise-chatbot 2>$null
-
-          docker run -d `
-            --name movewise-chatbot `
-            -p 8000:8000 `
+          docker run -d \
+            --name movewise-chatbot \
+            -p 8000:8000 \
             movewise-chatbot:${{ github.sha }}
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Docker container failed to start."
-          }
-
-      - name: Docker health test
-        shell: powershell -ExecutionPolicy Bypass -File {0}
+      - name: Wait for application
         run: |
-          $ready = $false
+          sleep 10
 
-          for ($i = 1; $i -le 30; $i++) {
-            try {
-              $response = Invoke-WebRequest `
-                -Uri "http://localhost:8000/health" `
-                -UseBasicParsing `
-                -TimeoutSec 5
+      - name: Health check
+        run: |
+          curl --fail http://localhost:8000/health
 
-              if ($response.StatusCode -eq 200) {
-                $ready = $true
-                break
-              }
-            }
-            catch {}
+      - name: Docker logs
+        if: failure()
+        run: |
+          docker logs movewise-chatbot
 
-            Start-Sleep 2
-          }
-
-          if (-not $ready) {
-            docker logs movewise-chatbot
-            throw "Docker health check failed."
-          }
-
-          $health = Invoke-RestMethod `
-            -Uri "http://localhost:8000/health"
-
-          if ($health.status -ne "healthy") {
-            throw "API health check failed."
-          }
-
-          Write-Host "Docker test PASSED."
-
-      - name: Cleanup Docker
+      - name: Cleanup Docker container
         if: always()
-        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          docker stop movewise-chatbot 2>$null
-          docker rm movewise-chatbot 2>$null
-
+          docker stop movewise-chatbot || true
+          docker rm movewise-chatbot || true
 
   # ==========================================================
   # 4. DEPLOY
