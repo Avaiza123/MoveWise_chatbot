@@ -57,19 +57,20 @@ jobs:
 
       - name: Run tests
         shell: powershell -ExecutionPolicy Bypass -File {0}
+        working-directory: backend_chatbot
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
           & $python -m pytest `
             -v `
-            --cov=backend_chatbot `
+            --cov=. `
             --cov-report=term `
-            --cov-report=xml:coverage.xml
+            --cov-report=xml:$env:GITHUB_WORKSPACE\coverage.xml
 
           if ($LASTEXITCODE -ne 0) {
             throw "Tests failed."
           }
-
+          
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
