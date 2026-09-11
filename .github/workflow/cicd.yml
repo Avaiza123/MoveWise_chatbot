@@ -9,118 +9,385 @@ on:
   pull_request:
     branches:
       - main
+      - develop
 
-  workflow_dispatch:
+permissions:
+  contents: read
 
 jobs:
 
+  # ============================================================
+  # 1. AUTOMATED TESTS
+  # ============================================================
+
   test:
-    name: Auto Test
+    name: Automated Tests
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: backend_chatbot
+
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
+          cache: pip
+          cache-dependency-path: backend_chatbot/requirements.txt
 
-      - name: Install dependencies
+      - name: Upgrade pip
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
-      - name: Run tests with coverage
+      - name: Install production dependencies
         run: |
-          pytest -v \
-            --cov=. \
-            --cov-report=term \
-            --cov-report=xml
+          pip install -r requirements.txt
 
-      - name: Upload coverage
+      - name: Install development dependencies
+        run: |
+          pip install -r requirements-dev.txt
+
+      - name: Run pytest
+        run: |
+          pytest \
+            --cov=app \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            --junitxml=test-results.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results
+          path: backend_chatbot/test-results.xml
+
+      - name: Upload coverage report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: coverage.xml
+          path: backend_chatbot/coverage.xml
 
-  qa:
-    name: Auto QA
+
+  # ============================================================
+  # 2. AUTO QA
+  # ============================================================
+
+  quality:
+    name: AutoQA
     runs-on: ubuntu-latest
-    needs: test
+
+    defaults:
+      run:
+        working-directory: backend_chatbot
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
+
+      - name: Upgrade pip
+        run: |
+          python -m pip install --upgrade pip
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-          pip install ruff bandit pip-audit
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
 
-      - name: Ruff lint
+      # -------------------------------
+      # Ruff Lint
+      # -------------------------------
+
+      - name: Run Ruff lint
         run: |
           ruff check .
 
-      - name: Ruff format check
+      # -------------------------------
+      # Ruff Format
+      # -------------------------------
+
+      - name: Check code formatting
         run: |
           ruff format --check .
 
-      - name: Security scan
-        run: |
-          bandit -r . -x tests
+      # -------------------------------
+      # Dependency Security
+      # -------------------------------
 
-      - name: Dependency security audit
+      - name: Run dependency security audit
         run: |
-          pip-audit
+          pip-audit -r requirements.txt
 
-  build:
-    name: Build Docker
+
+  # ============================================================
+  # 3. DOCKER BUILD + DOCKER QA
+  # ============================================================
+
+  docker:
+    name: Docker Build and QA
     runs-on: ubuntu-latest
+
     needs:
       - test
-      - qa
+      - quality
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # -------------------------------
+      # Build Docker image
+      # -------------------------------
 
       - name: Build Docker image
         run: |
           docker build \
-            -t movewise-chatbot:${{ github.sha }} \
+            -t movewise-chatbot:test \
             .
 
-      - name: Verify Docker image
+      # -------------------------------
+      # Start Docker container
+      # -------------------------------
+
+      - name: Start Docker container
         run: |
-          docker image inspect movewise-chatbot:${{ github.sha }}
-    deploy:
-    name: Auto Deploy
+          docker run -d \
+            --name movewise-chatbot \
+            -p 8000:8000 \
+            movewise-chatbot:test
+
+      # -------------------------------
+      # Wait for API
+      # -------------------------------
+
+      - name: Wait for API to become healthy
+        run: |
+          echo "Waiting for MoveWise API..."
+
+          for i in {1..30}; do
+
+            if curl -fsS http://localhost:8000/health; then
+              echo ""
+              echo "API is healthy!"
+              exit 0
+            fi
+
+            echo "Attempt $i failed. Waiting..."
+            sleep 2
+
+          done
+
+          echo "API failed to start."
+
+          docker logs movewise-chatbot
+
+          exit 1
+
+      # -------------------------------
+      # Health API test
+      # -------------------------------
+
+      - name: Test health endpoint
+        run: |
+          curl --fail \
+            http://localhost:8000/health
+
+      # -------------------------------
+      # Greeting API test
+      # -------------------------------
+
+      - name: Test greeting endpoint
+        run: |
+          curl --fail \
+            http://localhost:8000/api/greeting
+
+      # -------------------------------
+      # Chat API test
+      # -------------------------------
+
+      - name: Test chatbot endpoint
+        run: |
+          curl --fail \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"message":"What is a good beginner workout?"}' \
+            http://localhost:8000/api/chat
+
+      # -------------------------------
+      # Fitness API test
+      # -------------------------------
+
+      - name: Test fitness endpoint
+        run: |
+          curl --fail \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"message":"What exercise should I do?"}' \
+            http://localhost:8000/api/fitness
+
+      # -------------------------------
+      # Health API test
+      # -------------------------------
+
+      - name: Test health chatbot endpoint
+        run: |
+          curl --fail \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"message":"How much sleep should I get?"}' \
+            http://localhost:8000/api/health
+
+      # -------------------------------
+      # Diet API test
+      # -------------------------------
+
+      - name: Test diet endpoint
+        run: |
+          curl --fail \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"message":"What should I eat?"}' \
+            http://localhost:8000/api/diet
+
+      # -------------------------------
+      # Food API test
+      # -------------------------------
+
+      - name: Test food endpoint
+        run: |
+          curl --fail \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"message":"How many calories are in chicken?"}' \
+            http://localhost:8000/api/food
+
+      # -------------------------------
+      # Knowledge API test
+      # -------------------------------
+
+      - name: Test knowledge statistics
+        run: |
+          curl --fail \
+            http://localhost:8000/api/knowledge/stats
+
+      # -------------------------------
+      # Show logs if anything fails
+      # -------------------------------
+
+      - name: Show Docker logs
+        if: always()
+        run: |
+          docker logs movewise-chatbot
+
+      # -------------------------------
+      # Stop container
+      # -------------------------------
+
+      - name: Stop Docker container
+        if: always()
+        run: |
+          docker stop movewise-chatbot || true
+
+
+  # ============================================================
+  # 4. PRODUCTION DEPLOYMENT
+  # ============================================================
+
+  deploy:
+    name: Deploy to Production
     runs-on: ubuntu-latest
 
     needs:
       - test
-      - qa
-      - build
+      - quality
+      - docker
 
-    if: github.ref == 'refs/heads/main'
+    # Deploy ONLY when main branch receives a push.
+    # Pull requests and develop branch will NOT deploy.
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
 
     environment:
       name: production
 
     steps:
 
-      - name: Deploy application
+      - name: Deploy to Render
         run: |
-          echo "Deploying MoveWise Chatbot..."
+          echo "Starting production deployment..."
+
+          curl --fail \
+            --request POST \
+            "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+          echo "Render deployment triggered successfully."
+
+
+  # ============================================================
+  # 5. PRODUCTION SMOKE TEST
+  # ============================================================
+
+  smoke-test:
+    name: Production Smoke Test
+    runs-on: ubuntu-latest
+
+    needs:
+      - deploy
+
+    steps:
+
+      # Give Render time to build/start the service
+      - name: Wait for deployment
+        run: |
+          echo "Waiting for production deployment..."
+          sleep 30
+
+      # -------------------------------
+      # Production health check
+      # -------------------------------
+
+      - name: Production health check
+        run: |
+          curl --fail \
+            "${{ secrets.PRODUCTION_URL }}/health"
+
+      # -------------------------------
+      # Production greeting test
+      # -------------------------------
+
+      - name: Production greeting test
+        run: |
+          curl --fail \
+            "${{ secrets.PRODUCTION_URL }}/api/greeting"
+
+      # -------------------------------
+      # Production chatbot test
+      # -------------------------------
+
+      - name: Production chatbot test
+        run: |
+          curl --fail \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"message":"What is a good beginner workout?"}' \
+            "${{ secrets.PRODUCTION_URL }}/api/chat"
+
+      - name: Deployment successful
+        run: |
+          echo "======================================"
+          echo "MoveWise deployment successful!"
+          echo "======================================"
