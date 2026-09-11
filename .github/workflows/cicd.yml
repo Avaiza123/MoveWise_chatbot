@@ -2,40 +2,97 @@ name: MoveWise Chatbot CI/CD
 
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - main
+      - develop
+
   pull_request:
-    branches: [main]
+    branches:
+      - main
+
   workflow_dispatch:
 
 permissions:
   contents: read
 
+# ============================================================
+# GLOBAL CONFIGURATION
+# ============================================================
 env:
-  PYTHON_VERSION: '3.14'
-  PYTHON_EXE: 'C:\Users\avaiza.shahid\AppData\Local\Programs\Python\Launcher\py.exe'
+  PYTHON_EXE: 'C:\Users\avaiza.shahid\AppData\Local\Programs\Python\Python314\python.exe'
+  CI_VENV: '.ci-venv'
 
 jobs:
-  # ---------------- TEST ----------------
+
+  # ============================================================
+  # 1. AUTO TEST
+  # ============================================================
   test:
     name: Auto Test
     runs-on: [self-hosted, Windows, X64]
+
     steps:
-      - uses: actions/checkout@v4
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Python 3.14
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          Write-Host "Python executable:"
+          Write-Host $env:PYTHON_EXE
+
+          if (-not (Test-Path $env:PYTHON_EXE)) {
+            throw "Python executable not found: $env:PYTHON_EXE"
+          }
+
+          & $env:PYTHON_EXE --version
+          & $env:PYTHON_EXE -m pip --version
+
+      - name: Create CI virtual environment
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          $venv = Join-Path $env:GITHUB_WORKSPACE $env:CI_VENV
+
+          Write-Host "Creating virtual environment:"
+          Write-Host $venv
+
+          if (Test-Path $venv) {
+            Remove-Item -Recurse -Force $venv
+          }
+
+          & $env:PYTHON_EXE -m venv $venv
+
+          $venvPython = Join-Path $venv "Scripts\python.exe"
+
+          if (-not (Test-Path $venvPython)) {
+            throw "Virtual environment Python was not created."
+          }
+
+          & $venvPython --version
 
       - name: Install dependencies
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install --upgrade pip
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install -r backend_chatbot/requirements.txt
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install -r requirements-dev.txt
+          $venvPython = Join-Path $env:GITHUB_WORKSPACE "$env:CI_VENV\Scripts\python.exe"
+
+          & $venvPython -m pip install --upgrade pip
+          & $venvPython -m pip install -r backend_chatbot/requirements.txt
+          & $venvPython -m pip install -r requirements-dev.txt
 
       - name: Run tests with coverage
         shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pytest -v --cov=. --cov-report=term --cov-report=xml
+          $venvPython = Join-Path $env:GITHUB_WORKSPACE "$env:CI_VENV\Scripts\python.exe"
 
-      - name: Upload coverage
+          & $venvPython -m pytest `
+            -v `
+            --cov=. `
+            --cov-report=term `
+            --cov-report=xml
+
+      - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -43,69 +100,214 @@ jobs:
           path: backend_chatbot/coverage.xml
           if-no-files-found: ignore
 
-  # ---------------- QA ----------------
+      - name: Cleanup CI virtual environment
+        if: always()
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          $venv = Join-Path $env:GITHUB_WORKSPACE $env:CI_VENV
+          if (Test-Path $venv) {
+            Remove-Item -Recurse -Force $venv
+          }
+
+
+  # ============================================================
+  # 2. AUTO QA
+  # ============================================================
   qa:
     name: Auto QA
     runs-on: [self-hosted, Windows, X64]
     needs: test
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Install dependencies
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Python 3.14
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install --upgrade pip
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install -r backend_chatbot/requirements.txt
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip install -r requirements-dev.txt
+          if (-not (Test-Path $env:PYTHON_EXE)) {
+            throw "Python executable not found: $env:PYTHON_EXE"
+          }
+          & $env:PYTHON_EXE --version
 
-      - name: Lint, format, security, audit
+      - name: Create CI virtual environment
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          $venv = Join-Path $env:GITHUB_WORKSPACE $env:CI_VENV
+
+          if (Test-Path $venv) {
+            Remove-Item -Recurse -Force $venv
+          }
+
+          & $env:PYTHON_EXE -m venv $venv
+
+          $venvPython = Join-Path $venv "Scripts\python.exe"
+
+          if (-not (Test-Path $venvPython)) {
+            throw "Virtual environment Python was not created."
+          }
+
+          & $venvPython --version
+
+      - name: Install QA dependencies
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          $venvPython = Join-Path $env:GITHUB_WORKSPACE "$env:CI_VENV\Scripts\python.exe"
+
+          & $venvPython -m pip install --upgrade pip
+          & $venvPython -m pip install -r backend_chatbot/requirements.txt
+          & $venvPython -m pip install -r requirements-dev.txt
+
+      - name: Verify QA tools
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          $venvPython = Join-Path $env:GITHUB_WORKSPACE "$env:CI_VENV\Scripts\python.exe"
+
+          & $venvPython -m ruff --version
+          & $venvPython -m bandit --version
+          & $venvPython -m pip_audit --version
+
+      - name: Ruff lint
         shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m ruff check .
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m ruff format --check .
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m bandit -r . -x tests
-          & "$env:PYTHON_EXE" -$env:PYTHON_VERSION -m pip_audit -r requirements.txt
+          $venvPython = Join-Path $env:GITHUB_WORKSPACE "$env:CI_VENV\Scripts\python.exe"
+          & $venvPython -m ruff check .
 
-  # ---------------- BUILD ----------------
+      - name: Ruff format check
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        working-directory: backend_chatbot
+        run: |
+          $venvPython = Join-Path $env:GITHUB_WORKSPACE "$env:CI_VENV\Scripts\python.exe"
+          & $venvPython -m ruff format --check .
+
+      - name: Bandit security scan
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        working-directory: backend_chatbot
+        run: |
+          $venvPython = Join-Path $env:GITHUB_WORKSPACE "$env:CI_VENV\Scripts\python.exe"
+          & $venvPython -m bandit -r . -x tests
+
+      - name: pip-audit dependency scan
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        working-directory: backend_chatbot
+        run: |
+          $venvPython = Join-Path $env:GITHUB_WORKSPACE "$env:CI_VENV\Scripts\python.exe"
+          & $venvPython -m pip_audit -r requirements.txt
+
+      - name: Cleanup CI virtual environment
+        if: always()
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          $venv = Join-Path $env:GITHUB_WORKSPACE $env:CI_VENV
+          if (Test-Path $venv) {
+            Remove-Item -Recurse -Force $venv
+          }
+
+
+  # ============================================================
+  # 3. DOCKER BUILD + RUNTIME QA
+  # ============================================================
   build:
     name: Build Docker
     runs-on: [self-hosted, Windows, X64]
-    needs: [test, qa]
-    steps:
-      - uses: actions/checkout@v4
+    needs:
+      - test
+      - qa
 
-      - name: Build image
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify Docker
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          docker rm -f movewise-chatbot 2>$null
-          docker build -t movewise-chatbot:${{ github.sha }} .
-          docker run -d --name movewise-chatbot -p 8000:8000 movewise-chatbot:${{ github.sha }}
+          docker --version
+          docker info
+
+      - name: Remove previous container
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          docker rm -f movewise-chatbot 2> $null
+
+      - name: Build Docker image
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          docker build `
+            -t movewise-chatbot:${{ github.sha }} `
+            .
+
+      - name: Inspect Docker image
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          docker image inspect movewise-chatbot:${{ github.sha }}
+
+      - name: Start Docker container
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          docker run -d `
+            --name movewise-chatbot `
+            -p 8000:8000 `
+            movewise-chatbot:${{ github.sha }}
 
       - name: Wait for API
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
+          $healthy = $false
+
           for ($i = 1; $i -le 30; $i++) {
             try {
-              $r = Invoke-WebRequest http://localhost:8000/health -UseBasicParsing -TimeoutSec 5
-              if ($r.StatusCode -eq 200) { Write-Host "API healthy."; exit 0 }
-            } catch { Write-Host "Attempt $i failed." }
+              $response = Invoke-WebRequest `
+                -Uri "http://localhost:8000/health" `
+                -UseBasicParsing `
+                -TimeoutSec 5
+
+              if ($response.StatusCode -eq 200) {
+                Write-Host "API is healthy."
+                $healthy = $true
+                break
+              }
+            }
+            catch {
+              Write-Host "Health check attempt $i failed."
+            }
+
             Start-Sleep -Seconds 2
           }
-          docker logs movewise-chatbot
-          exit 1
 
-      - name: Smoke test endpoints
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          foreach ($url in @(
-            "http://localhost:8000/api/greeting",
-            "http://localhost:8000/api/knowledge/stats"
-          )) {
-            Invoke-WebRequest $url -UseBasicParsing | Out-Null
-            Write-Host "GET $url passed."
+          if (-not $healthy) {
+            Write-Host "Container logs:"
+            docker logs movewise-chatbot
+            throw "Docker API did not become healthy."
           }
 
+      - name: Docker runtime smoke tests
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          # Health
+          $health = Invoke-RestMethod -Uri "http://localhost:8000/health" -Method GET
+          if ($health.status -ne "healthy") {
+            throw "Health endpoint failed."
+          }
+          Write-Host "GET /health passed."
+
+          # Greeting
+          $greeting = Invoke-RestMethod -Uri "http://localhost:8000/api/greeting" -Method GET
+          if (-not $greeting.message) {
+            throw "Greeting endpoint returned no message."
+          }
+          Write-Host "GET /api/greeting passed."
+
+          # Knowledge stats
+          $stats = Invoke-RestMethod -Uri "http://localhost:8000/api/knowledge/stats" -Method GET
+          if (-not $stats.success) {
+            throw "Knowledge stats endpoint failed."
+          }
+          Write-Host "GET /api/knowledge/stats passed."
+
+          # POST endpoints
           $postTests = @{
             "/api/chat"    = "What is a good beginner workout?"
             "/api/fitness" = "What exercise should I do?"
@@ -113,64 +315,143 @@ jobs:
             "/api/diet"    = "What should I eat?"
             "/api/food"    = "How many calories are in chicken?"
           }
+
           foreach ($path in $postTests.Keys) {
             $body = @{ message = $postTests[$path] } | ConvertTo-Json
-            $r = Invoke-RestMethod -Uri "http://localhost:8000$path" -Method POST -ContentType "application/json" -Body $body
-            if ($null -eq $r.message) { throw "No message from $path" }
+            $response = Invoke-RestMethod `
+              -Uri "http://localhost:8000$path" `
+              -Method POST `
+              -ContentType "application/json" `
+              -Body $body
+
+            if (-not $response.message) {
+              throw "$path returned no message."
+            }
             Write-Host "POST $path passed."
           }
 
-      - name: Docker logs & cleanup
+      - name: Docker logs
         if: always()
+        continue-on-error: true
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          docker logs movewise-chatbot
-          docker stop movewise-chatbot 2>$null
-          docker rm movewise-chatbot 2>$null
+          docker logs movewise-chatbot 2> $null
 
-  # ---------------- DEPLOY ----------------
+      - name: Docker cleanup
+        if: always()
+        continue-on-error: true
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          docker stop movewise-chatbot 2> $null
+          docker rm movewise-chatbot 2> $null
+
+
+  # ============================================================
+  # 4. AUTO DEPLOY
+  # ============================================================
   deploy:
     name: Auto Deploy
     runs-on: [self-hosted, Windows, X64]
-    needs: [test, qa, build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs:
+      - test
+      - qa
+      - build
+
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
+
     environment:
       name: production
+
     steps:
-      - name: Trigger Render deploy
+
+      - name: Trigger Render deployment
         shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:RENDER_DEPLOY_HOOK)) { throw "RENDER_DEPLOY_HOOK not set" }
-          $r = Invoke-WebRequest $env:RENDER_DEPLOY_HOOK -Method POST -UseBasicParsing
-          if ($r.StatusCode -lt 200 -or $r.StatusCode -ge 300) { throw "Deploy hook failed: $($r.StatusCode)" }
-          Write-Host "Deployment triggered."
+          if ([string]::IsNullOrWhiteSpace($env:RENDER_DEPLOY_HOOK)) {
+            throw "RENDER_DEPLOY_HOOK secret is not configured."
+          }
 
-  # ---------------- SMOKE TEST (PROD) ----------------
+          Write-Host "Triggering Render deployment..."
+
+          $response = Invoke-WebRequest `
+            -Uri $env:RENDER_DEPLOY_HOOK `
+            -Method POST `
+            -UseBasicParsing
+
+          if ($response.StatusCode -lt 200 -or $response.StatusCode -ge 300) {
+            throw "Render deployment failed with HTTP status $($response.StatusCode)."
+          }
+
+          Write-Host "Render deployment triggered successfully."
+
+
+  # ============================================================
+  # 5. PRODUCTION SMOKE TEST
+  # ============================================================
   smoke-test:
     name: Production Smoke Test
     runs-on: [self-hosted, Windows, X64]
-    needs: deploy
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs:
+      - deploy
+
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
+
     steps:
-      - name: Wait for deployment
+
+      - name: Wait for production deployment
         shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: Start-Sleep -Seconds 30
+        run: |
+          Write-Host "Waiting 30 seconds for Render deployment..."
+          Start-Sleep -Seconds 30
 
       - name: Production smoke test
         shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:PRODUCTION_URL)) { throw "PRODUCTION_URL not set" }
+          if ([string]::IsNullOrWhiteSpace($env:PRODUCTION_URL)) {
+            throw "PRODUCTION_URL secret is not configured."
+          }
+
           $base = $env:PRODUCTION_URL.TrimEnd('/')
 
-          Invoke-WebRequest "$base/health" -UseBasicParsing | Out-Null
-          Invoke-WebRequest "$base/api/greeting" -UseBasicParsing | Out-Null
+          Write-Host "Testing production API:"
+          Write-Host $base
 
+          # Health
+          $health = Invoke-RestMethod -Uri "$base/health" -Method GET
+          if ($health.status -ne "healthy") {
+            throw "Production health check failed."
+          }
+          Write-Host "Production GET /health passed."
+
+          # Greeting
+          $greeting = Invoke-RestMethod -Uri "$base/api/greeting" -Method GET
+          if (-not $greeting.message) {
+            throw "Production greeting endpoint returned no message."
+          }
+          Write-Host "Production GET /api/greeting passed."
+
+          # Chat
           $body = @{ message = "What is a good beginner workout?" } | ConvertTo-Json
-          $r = Invoke-RestMethod -Uri "$base/api/chat" -Method POST -ContentType "application/json" -Body $body
-          if ($null -eq $r.message) { throw "Production chatbot returned no message" }
+          $response = Invoke-RestMethod `
+            -Uri "$base/api/chat" `
+            -Method POST `
+            -ContentType "application/json" `
+            -Body $body
 
-          Write-Host "Production smoke test passed."
+          if (-not $response.message) {
+            throw "Production chatbot returned no message."
+          }
+          Write-Host "Production POST /api/chat passed."
+
+          Write-Host ""
+          Write-Host "========================================"
+          Write-Host "Production smoke test PASSED"
+          Write-Host "========================================"
