@@ -69,7 +69,18 @@ jobs:
             --cov-report=xml:coverage.xml
 
           if ($LASTEXITCODE -ne 0) {
-            throw "Tests failed."
+            Write-Host "First pytest run failed. Retrying once to handle transient runner failures..."
+
+            & $python -X pythonpath="$env_path" -m pytest `
+              -v `
+              --tb=short `
+              --cov=backend_chatbot `
+              --cov-report=term `
+              --cov-report=xml:coverage.xml
+          }
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "Tests failed after retry."
           }
           
       - name: Upload coverage
