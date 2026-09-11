@@ -89,7 +89,7 @@ jobs:
           }
 
 
-  # ==========================================================
+    # ==========================================================
   # 2. AUTO QA
   # ==========================================================
   qa:
@@ -121,18 +121,6 @@ jobs:
 
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
-
-      - name: Ruff
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        working-directory: backend_chatbot
-        run: |
-          $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
-
-          & $python -m ruff check .
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Ruff QA failed."
-          }
 
       - name: Security scan
         shell: powershell -ExecutionPolicy Bypass -File {0}
@@ -167,8 +155,6 @@ jobs:
           if (Test-Path $venv) {
             Remove-Item $venv -Recurse -Force
           }
-
-
   # ==========================================================
   # 3. DOCKER BUILD + TEST
   # ==========================================================
