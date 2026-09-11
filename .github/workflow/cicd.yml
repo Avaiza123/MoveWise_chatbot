@@ -13,10 +13,13 @@ on:
   workflow_dispatch:
 
 jobs:
-
   test:
     name: Auto Test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows]
+
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout repository
@@ -36,10 +39,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          pytest -v \
-            --cov=. \
-            --cov-report=term \
-            --cov-report=xml
+          pytest -v --cov=. --cov-report=term --cov-report=xml
 
       - name: Upload coverage
         uses: actions/upload-artifact@v4
@@ -49,8 +49,12 @@ jobs:
 
   qa:
     name: Auto QA
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows]
     needs: test
+
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout repository
@@ -87,10 +91,14 @@ jobs:
 
   build:
     name: Build Docker
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows]
     needs:
       - test
       - qa
+
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout repository
@@ -98,17 +106,15 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build \
-            -t movewise-chatbot:${{ github.sha }} \
-            .
+          docker build -t movewise-chatbot:${{ github.sha }} .
 
       - name: Verify Docker image
         run: |
           docker image inspect movewise-chatbot:${{ github.sha }}
-    deploy:
-    name: Auto Deploy
-    runs-on: ubuntu-latest
 
+  deploy:
+    name: Auto Deploy
+    runs-on: [self-hosted, Windows]
     needs:
       - test
       - qa
@@ -119,8 +125,11 @@ jobs:
     environment:
       name: production
 
-    steps:
+    defaults:
+      run:
+        shell: bash
 
+    steps:
       - name: Deploy application
         run: |
           echo "Deploying MoveWise Chatbot..."
