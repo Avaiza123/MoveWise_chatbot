@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup Python
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           if (-not (Test-Path $env:PYTHON_EXE)) {
             throw "Python 3.14 not found: $env:PYTHON_EXE"
@@ -43,7 +43,7 @@ jobs:
           }
 
       - name: Install dependencies
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
@@ -58,7 +58,7 @@ jobs:
           & $python -c "import flask, fastapi, pytest; print('Dependencies OK')"
 
       - name: Run tests
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
@@ -79,7 +79,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
           if (Test-Path $venv) {
