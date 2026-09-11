@@ -89,7 +89,7 @@ jobs:
           }
 
 
-   # ==========================================================
+  # ==========================================================
   # 2. AUTO QA
   # ==========================================================
   qa:
@@ -162,63 +162,65 @@ jobs:
           if (Test-Path $venv) {
             Remove-Item $venv -Recurse -Force
           }
-          
+
+
   # ==========================================================
   # 3. DOCKER BUILD + TEST
   # ==========================================================
- docker:
-  name: Docker Build & Test
-  runs-on: ubuntu-latest
-  needs: qa
+  docker:
+    name: Docker Build & Test
+    runs-on: ubuntu-latest
+    needs: qa
 
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Check Docker
-      run: |
-        docker version
-        docker info
+      - name: Check Docker
+        run: |
+          docker version
+          docker info
 
-    - name: Build Docker image
-      run: |
-        docker build \
-          -t movewise-chatbot:${{ github.sha }} \
-          .
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t movewise-chatbot:${{ github.sha }} \
+            .
 
-    - name: Run Docker container
-      run: |
-        docker run -d \
-          --name movewise-chatbot \
-          -p 8000:8000 \
-          movewise-chatbot:${{ github.sha }}
+      - name: Run Docker container
+        run: |
+          docker run -d \
+            --name movewise-chatbot \
+            -p 8000:8000 \
+            movewise-chatbot:${{ github.sha }}
 
-    - name: Health check
-      run: |
-        for i in {1..10}; do
-          if curl --fail http://localhost:8000/health; then
-            echo "Health check passed."
-            exit 0
-          fi
+      - name: Health check
+        run: |
+          for i in {1..10}; do
+            if curl --fail http://localhost:8000/health; then
+              echo "Health check passed."
+              exit 0
+            fi
 
-          echo "Application not ready yet. Attempt $i/10..."
-          sleep 3
-        done
+            echo "Application not ready yet. Attempt $i/10..."
+            sleep 3
+          done
 
-        echo "Health check failed."
-        docker logs movewise-chatbot
-        exit 1
+          echo "Health check failed."
+          docker logs movewise-chatbot
+          exit 1
 
-    - name: Docker logs
-      if: failure()
-      run: |
-        docker logs movewise-chatbot
+      - name: Docker logs
+        if: failure()
+        run: |
+          docker logs movewise-chatbot
 
-    - name: Cleanup Docker container
-      if: always()
-      run: |
-        docker stop movewise-chatbot || true
-        docker rm movewise-chatbot || true
+      - name: Cleanup Docker container
+        if: always()
+        run: |
+          docker stop movewise-chatbot || true
+          docker rm movewise-chatbot || true
+
 
   # ==========================================================
   # 4. DEPLOY
