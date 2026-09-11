@@ -105,7 +105,12 @@ jobs:
 
           Set-Location $env:GITHUB_WORKSPACE
 
-          Write-Host ""
+          # Prevent OpenBLAS from allocating excessive memory
+          $env:OPENBLAS_NUM_THREADS = "1"
+          $env:OMP_NUM_THREADS = "1"
+          $env:MKL_NUM_THREADS = "1"
+          $env:NUMEXPR_NUM_THREADS = "1"
+
           Write-Host "========================================"
           Write-Host "RUNNING PYTEST"
           Write-Host "========================================"
@@ -136,7 +141,6 @@ jobs:
           Write-Host "========================================"
           Write-Host "ALL TESTS PASSED"
           Write-Host "========================================"
-
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
