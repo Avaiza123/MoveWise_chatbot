@@ -166,7 +166,7 @@ jobs:
           }
 
 
-  # ==========================================================
+# ==========================================================
   # 3. DOCKER BUILD + TEST
   # ==========================================================
   docker:
@@ -223,3 +223,86 @@ jobs:
           docker stop movewise-chatbot || true
           docker rm movewise-chatbot || true
 
+
+  # ==========================================================
+  # 4. AUTO DEPLOY - LOCAL
+  # ==========================================================
+  deploy:
+    name: Auto Deploy Local
+    runs-on: [self-hosted, Windows, X64]
+    needs: docker
+
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy Docker container
+        shell: powershell -ExecutionPolicy Bypass -File {0}
+        run: |
+          Write-Host "========================================"
+          Write-Host "BUILDING PRODUCTION DOCKER IMAGE"
+          Write-Host "========================================"
+
+          docker build -t movewise-chatbot:latest .
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "Docker build failed."
+          }
+
+          Write-Host ""
+          Write-Host "Stopping previous container..."
+
+          docker stop movewise-chatbot 2>$null
+          docker rm movewise-chatbot 2>$null
+
+          Write-Host ""
+          Write-Host "Starting new container..."
+
+          docker run -d `
+            --name movewise-chatbot `
+            --restart unless-stopped `
+            -p 8000:8000 `
+            movewise-chatbot:latest
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "Docker container failed to start."
+          }
+
+          Write-Host ""
+          Write-Host "Waiting for application..."
+          Start-Sleep -Seconds 10
+
+          Write-Host ""
+          Write-Host "Checking application health..."
+
+          try {
+            $response = Invoke-WebRequest `
+              -Uri "http://localhost:8000/health" `
+              -UseBasicParsing `
+              -TimeoutSec 10
+
+            if ($response.StatusCode -eq 200) {
+              Write-Host ""
+              Write-Host "========================================"
+              Write-Host "AUTO DEPLOY SUCCESSFUL"
+              Write-Host "========================================"
+              Write-Host "Application: http://localhost:8000"
+              Write-Host "Health:      http://localhost:8000/health"
+              Write-Host "========================================"
+            }
+            else {
+              throw "Health check returned HTTP $($response.StatusCode)."
+            }
+          }
+          catch {
+            Write-Host ""
+            Write-Host "========================================"
+            Write-Host "AUTO DEPLOY FAILED"
+            Write-Host "========================================"
+
+            docker logs movewise-chatbot
+
+            throw
+          }
