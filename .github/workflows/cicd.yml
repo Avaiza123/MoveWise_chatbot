@@ -24,7 +24,6 @@ jobs:
     runs-on: [self-hosted, Windows, X64]
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -43,12 +42,6 @@ jobs:
 
           & $env:PYTHON_EXE -m venv $venv
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to create Python virtual environment."
-          }
-
-          Write-Host "Python virtual environment created."
-
       - name: Install dependencies
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
@@ -56,186 +49,25 @@ jobs:
 
           & $python -m pip install --upgrade pip
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "pip upgrade failed."
-          }
-
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Application dependency installation failed."
-          }
-
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Development dependency installation failed."
-          }
-
-          Write-Host "All dependencies installed."
 
       - name: Run tests
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
-          Set-Location $env:GITHUB_WORKSPACE
+          & $python -m pytest `
+            -v `
+            --cov=backend_chatbot `
+            --cov-report=term `
+            --cov-report=xml:coverage.xml
 
-          # Prevent NumPy / SciPy / OpenBLAS memory problems
-          $env:OPENBLAS_NUM_THREADS = "1"
-          $env:OMP_NUM_THREADS = "1"
-          $env:MKL_NUM_THREADS = "1"
-          $env:NUMEXPR_NUM_THREADS = "1"
-
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "PYTHON VERSION"
-          Write-Host "========================================"
-
-          & $python --version
-
-          # --------------------------------------------------
-          # START FASTAPI TEST SERVER
-          # --------------------------------------------------
-
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "STARTING TEST SERVER"
-          Write-Host "========================================"
-
-          $server = Start-Process `
-            -FilePath $python `
-            -ArgumentList @(
-              "-m",
-              "uvicorn",
-              "backend_chatbot.fastapi_app:app",
-              "--host",
-              "127.0.0.1",
-              "--port",
-              "5000"
-            ) `
-            -PassThru `
-            -WindowStyle Hidden
-
-          Write-Host "FastAPI PID: $($server.Id)"
-
-          # --------------------------------------------------
-          # WAIT FOR SERVER
-          # --------------------------------------------------
-
-          Write-Host ""
-          Write-Host "Waiting for FastAPI on port 5000..."
-
-          $serverReady = $false
-
-          for ($i = 1; $i -le 20; $i++) {
-
-            try {
-
-              $response = Invoke-WebRequest `
-                -Uri "http://127.0.0.1:5000/health" `
-                -UseBasicParsing `
-                -TimeoutSec 3
-
-              if ($response.StatusCode -eq 200) {
-                Write-Host "FastAPI is ready."
-                $serverReady = $true
-                break
-              }
-
-            }
-            catch {
-
-              Write-Host "Server not ready. Attempt $i/20..."
-
-            }
-
-            Start-Sleep -Seconds 2
-          }
-
-          if (-not $serverReady) {
-
-            Write-Host ""
-            Write-Host "========================================"
-            Write-Host "FASTAPI FAILED TO START"
-            Write-Host "========================================"
-
-            if ($server -and -not $server.HasExited) {
-              Stop-Process -Id $server.Id -Force
-            }
-
-            throw "FastAPI test server did not start."
-          }
-
-          # --------------------------------------------------
-          # TESTS
-          # --------------------------------------------------
-
-          try {
-
-            Write-Host ""
-            Write-Host "========================================"
-            Write-Host "COLLECTING TESTS"
-            Write-Host "========================================"
-
-            & $python -m pytest --collect-only -v
-
-            $collectExit = $LASTEXITCODE
-
-            if ($collectExit -ne 0) {
-              throw "Test collection failed with exit code $collectExit."
-            }
-
-            Write-Host ""
-            Write-Host "Test collection successful."
-
-            Write-Host ""
-            Write-Host "========================================"
-            Write-Host "RUNNING ALL TESTS"
-            Write-Host "========================================"
-
-            & $python -m pytest `
-              -v `
-              --tb=long `
-              --capture=no `
-              --cov=backend_chatbot `
-              --cov-report=term `
-              --cov-report=xml:coverage.xml
-
-            $testExit = $LASTEXITCODE
-
-            Write-Host ""
-            Write-Host "Pytest exit code: $testExit"
-
-            if ($testExit -ne 0) {
-              throw "Pytest failed with exit code $testExit."
-            }
-
-            Write-Host ""
-            Write-Host "========================================"
-            Write-Host "ALL TESTS PASSED"
-            Write-Host "========================================"
-
-          }
-
-          finally {
-
-            # --------------------------------------------------
-            # ALWAYS STOP TEST SERVER
-            # --------------------------------------------------
-
-            Write-Host ""
-            Write-Host "========================================"
-            Write-Host "STOPPING TEST SERVER"
-            Write-Host "========================================"
-
-            if ($server -and -not $server.HasExited) {
-              Stop-Process -Id $server.Id -Force
-              Write-Host "FastAPI test server stopped."
-            }
-
+          if ($LASTEXITCODE -ne 0) {
+            throw "Tests failed."
           }
 
       - name: Upload coverage
@@ -256,8 +88,6 @@ jobs:
             Remove-Item $venv -Recurse -Force
           }
 
-          Write-Host "Test environment cleaned."
-
 
   # ==========================================================
   # 2. AUTO QA
@@ -268,17 +98,12 @@ jobs:
     needs: test
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup QA
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          if (-not (Test-Path $env:PYTHON_EXE)) {
-            throw "Python 3.14 not found."
-          }
-
           $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
 
           if (Test-Path $venv) {
@@ -287,48 +112,21 @@ jobs:
 
           & $env:PYTHON_EXE -m venv $venv
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to create QA virtual environment."
-          }
-
           $python = Join-Path $venv "Scripts\python.exe"
 
           & $python -m pip install --upgrade pip
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "pip upgrade failed."
-          }
-
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Application dependency installation failed."
-          }
-
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "QA dependency installation failed."
-          }
-
-          Write-Host "QA environment ready."
-
-      # ------------------------------------------------------
-      # SECURITY QA
-      # ------------------------------------------------------
 
       - name: Security scan
         shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
-
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "RUNNING BANDIT SECURITY SCAN"
-          Write-Host "========================================"
 
           & $python -m bandit `
             -r . `
@@ -339,12 +137,7 @@ jobs:
             throw "Security QA failed."
           }
 
-          Write-Host ""
           Write-Host "Security QA passed."
-
-      # ------------------------------------------------------
-      # DEPENDENCY QA
-      # ------------------------------------------------------
 
       - name: Dependency audit
         shell: powershell -ExecutionPolicy Bypass -File {0}
@@ -352,18 +145,12 @@ jobs:
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "RUNNING DEPENDENCY AUDIT"
-          Write-Host "========================================"
-
           & $python -m pip_audit -r requirements.txt
 
           if ($LASTEXITCODE -ne 0) {
             throw "Dependency audit failed."
           }
 
-          Write-Host ""
           Write-Host "Dependency audit passed."
 
       - name: Cleanup
@@ -376,8 +163,6 @@ jobs:
             Remove-Item $venv -Recurse -Force
           }
 
-          Write-Host "QA environment cleaned."
-
 
   # ==========================================================
   # 3. DOCKER BUILD + TEST
@@ -388,7 +173,6 @@ jobs:
     needs: qa
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -399,241 +183,41 @@ jobs:
 
       - name: Build Docker image
         run: |
-          echo "========================================"
-          echo "BUILDING DOCKER IMAGE"
-          echo "========================================"
-
           docker build \
             -t movewise-chatbot:${{ github.sha }} \
             .
 
       - name: Run Docker container
         run: |
-          echo "========================================"
-          echo "STARTING DOCKER CONTAINER"
-          echo "========================================"
-
           docker run -d \
             --name movewise-chatbot \
             -p 8000:8000 \
             movewise-chatbot:${{ github.sha }}
 
-          sleep 5
-
-          docker ps
-
       - name: Health check
         run: |
-          echo "========================================"
-          echo "DOCKER HEALTH CHECK"
-          echo "========================================"
-
           for i in {1..10}; do
-
             if curl --fail http://localhost:8000/health; then
-              echo ""
-              echo "Docker health check passed."
+              echo "Health check passed."
               exit 0
             fi
 
             echo "Application not ready yet. Attempt $i/10..."
             sleep 3
-
           done
 
-          echo ""
-          echo "========================================"
-          echo "DOCKER HEALTH CHECK FAILED"
-          echo "========================================"
-
-          docker ps
+          echo "Health check failed."
           docker logs movewise-chatbot
-
           exit 1
 
       - name: Docker logs
         if: failure()
         run: |
-          echo "========================================"
-          echo "DOCKER LOGS"
-          echo "========================================"
-
           docker logs movewise-chatbot
 
       - name: Cleanup Docker container
         if: always()
         run: |
-          echo "Cleaning Docker container..."
-
           docker stop movewise-chatbot || true
           docker rm movewise-chatbot || true
 
-          echo "Docker cleanup completed."
-
-
-  # ==========================================================
-  # 4. AUTO DEPLOY - LOCAL
-  # ==========================================================
-  deploy:
-    name: Auto Deploy Local
-    runs-on: [self-hosted, Windows, X64]
-    needs: docker
-
-    # Deploy ONLY when code is pushed to main
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Deploy Docker container
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "AUTO DEPLOY STARTED"
-          Write-Host "========================================"
-
-          # --------------------------------------------------
-          # BUILD PRODUCTION IMAGE
-          # --------------------------------------------------
-
-          Write-Host ""
-          Write-Host "Building production Docker image..."
-
-          docker build -t movewise-chatbot:latest .
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Docker production build failed."
-          }
-
-          Write-Host ""
-          Write-Host "Production image built successfully."
-
-          # --------------------------------------------------
-          # STOP OLD CONTAINER
-          # --------------------------------------------------
-
-          Write-Host ""
-          Write-Host "Stopping previous container..."
-
-          docker stop movewise-chatbot 2>$null
-
-          if ($LASTEXITCODE -eq 0) {
-            Write-Host "Previous container stopped."
-          }
-          else {
-            Write-Host "No running container found."
-          }
-
-          # --------------------------------------------------
-          # REMOVE OLD CONTAINER
-          # --------------------------------------------------
-
-          Write-Host ""
-          Write-Host "Removing previous container..."
-
-          docker rm movewise-chatbot 2>$null
-
-          # --------------------------------------------------
-          # START NEW CONTAINER
-          # --------------------------------------------------
-
-          Write-Host ""
-          Write-Host "Starting new production container..."
-
-          docker run -d `
-            --name movewise-chatbot `
-            --restart unless-stopped `
-            -p 8000:8000 `
-            movewise-chatbot:latest
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Docker container failed to start."
-          }
-
-          Write-Host ""
-          Write-Host "Production container started."
-
-          # --------------------------------------------------
-          # WAIT FOR APPLICATION
-          # --------------------------------------------------
-
-          Write-Host ""
-          Write-Host "Waiting for application..."
-
-          $healthy = $false
-
-          for ($i = 1; $i -le 20; $i++) {
-
-            try {
-
-              $response = Invoke-WebRequest `
-                -Uri "http://127.0.0.1:8000/health" `
-                -UseBasicParsing `
-                -TimeoutSec 5
-
-              if ($response.StatusCode -eq 200) {
-                $healthy = $true
-                Write-Host "Application is healthy."
-                break
-              }
-
-            }
-            catch {
-
-              Write-Host "Application not ready. Attempt $i/20..."
-
-            }
-
-            Start-Sleep -Seconds 3
-          }
-
-          # --------------------------------------------------
-          # FINAL HEALTH CHECK
-          # --------------------------------------------------
-
-          if (-not $healthy) {
-
-            Write-Host ""
-            Write-Host "========================================"
-            Write-Host "AUTO DEPLOY FAILED"
-            Write-Host "========================================"
-
-            Write-Host ""
-            Write-Host "Docker containers:"
-            docker ps -a
-
-            Write-Host ""
-            Write-Host "Application logs:"
-            docker logs movewise-chatbot
-
-            throw "Production application failed health check."
-          }
-
-          # --------------------------------------------------
-          # SUCCESS
-          # --------------------------------------------------
-
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "AUTO DEPLOY SUCCESSFUL"
-          Write-Host "========================================"
-
-          Write-Host "Application:"
-          Write-Host "http://localhost:8000"
-
-          Write-Host ""
-          Write-Host "Health:"
-          Write-Host "http://localhost:8000/health"
-
-          Write-Host ""
-          Write-Host "Container:"
-          docker ps --filter "name=movewise-chatbot"
-
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "DEPLOYMENT COMPLETE"
-          Write-Host "========================================"
