@@ -12,4 +12,4 @@ WORKDIR /app/backend_chatbot
 ENV PORT=8000
 ENV PYTHONUNBUFFERED=1
 
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8000} app.main:app"]
