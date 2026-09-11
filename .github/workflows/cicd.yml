@@ -17,6 +17,10 @@ permissions:
 
 jobs:
 
+# ============================================================
+# 1. AUTOMATED TESTING
+# ============================================================
+
   test:
     name: Auto Test
     runs-on: [self-hosted, Windows, X64]
@@ -25,29 +29,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: "pip"
-          cache-dependency-path: backend_chatbot/requirements.txt
+      - name: Check Python
+        shell: powershell
+        run: |
+          py -3.14 --version
+          py -3.14 -m pip --version
 
       - name: Install dependencies
         shell: powershell
         run: |
-          python -m pip install --upgrade pip
-          pip install -r backend_chatbot/requirements.txt
-          pip install pytest pytest-cov httpx
-
-          if (Test-Path "backend_chatbot/requirements-dev.txt") {
-            pip install -r backend_chatbot/requirements-dev.txt
-          }
+          py -3.14 -m pip install --upgrade pip
+          py -3.14 -m pip install -r backend_chatbot/requirements.txt
+          py -3.14 -m pip install -r requirements-dev.txt
 
       - name: Run tests with coverage
         shell: powershell
         working-directory: backend_chatbot
         run: |
-          pytest -v --cov=. --cov-report=term --cov-report=xml
+          py -3.14 -m pytest `
+            -v `
+            --cov=. `
+            --cov-report=term `
+            --cov-report=xml
 
       - name: Upload coverage
         if: always()
@@ -55,34 +58,41 @@ jobs:
         with:
           name: coverage-report
           path: backend_chatbot/coverage.xml
+          if-no-files-found: ignore
 
+# ============================================================
+# 2. AUTOMATED QA
+# ============================================================
 
   qa:
     name: Auto QA
     runs-on: [self-hosted, Windows, X64]
-    needs: test
+    needs:
+      - test
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: "pip"
-          cache-dependency-path: backend_chatbot/requirements.txt
+      - name: Check Python
+        shell: powershell
+        run: |
+          py -3.14 --version
+          py -3.14 -m pip --version
 
       - name: Install dependencies
         shell: powershell
         run: |
-          python -m pip install --upgrade pip
-          pip install -r backend_chatbot/requirements.txt
-          pip install ruff bandit pip-audit
+          py -3.14 -m pip install --upgrade pip
+          py -3.14 -m pip install -r backend_chatbot/requirements.txt
+          py -3.14 -m pip install -r requirements-dev.txt
 
-          if (Test-Path "backend_chatbot/requirements-dev.txt") {
-            pip install -r backend_chatbot/requirements-dev.txt
-          }
+      - name: Verify QA tools
+        shell: powershell
+        run: |
+          ruff --version
+          bandit --version
+          pip-audit --version
 
       - name: Ruff lint
         shell: powershell
@@ -108,6 +118,9 @@ jobs:
         run: |
           pip-audit -r requirements.txt
 
+# ============================================================
+# 3. DOCKER BUILD + CONTAINER QA
+# ============================================================
 
   build:
     name: Build Docker
@@ -125,6 +138,11 @@ jobs:
         run: |
           docker --version
           docker info
+
+      - name: Remove old container if present
+        shell: powershell
+        run: |
+          docker rm -f movewise-chatbot 2>$null
 
       - name: Build Docker image
         shell: powershell
@@ -167,7 +185,7 @@ jobs:
               }
             }
             catch {
-              Write-Host "Attempt $i failed. Waiting..."
+              Write-Host "Attempt $i failed."
             }
 
             Start-Sleep -Seconds 2
@@ -175,6 +193,7 @@ jobs:
 
           if (-not $healthy) {
             Write-Host "API failed to start."
+            Write-Host "Container logs:"
             docker logs movewise-chatbot
             exit 1
           }
@@ -182,16 +201,28 @@ jobs:
       - name: Test health endpoint
         shell: powershell
         run: |
-          Invoke-WebRequest `
+          $response = Invoke-WebRequest `
             -Uri "http://localhost:8000/health" `
             -UseBasicParsing
+
+          if ($response.StatusCode -ne 200) {
+            exit 1
+          }
+
+          Write-Host "Health endpoint passed."
 
       - name: Test greeting endpoint
         shell: powershell
         run: |
-          Invoke-WebRequest `
+          $response = Invoke-WebRequest `
             -Uri "http://localhost:8000/api/greeting" `
             -UseBasicParsing
+
+          if ($response.StatusCode -ne 200) {
+            exit 1
+          }
+
+          Write-Host "Greeting endpoint passed."
 
       - name: Test chatbot endpoint
         shell: powershell
@@ -200,11 +231,18 @@ jobs:
             message = "What is a good beginner workout?"
           } | ConvertTo-Json
 
-          Invoke-RestMethod `
+          $response = Invoke-RestMethod `
             -Uri "http://localhost:8000/api/chat" `
             -Method POST `
             -ContentType "application/json" `
             -Body $body
+
+          if ($null -eq $response.message) {
+            Write-Error "Chatbot response does not contain a message."
+            exit 1
+          }
+
+          Write-Host "Chatbot endpoint passed."
 
       - name: Test fitness endpoint
         shell: powershell
@@ -213,24 +251,38 @@ jobs:
             message = "What exercise should I do?"
           } | ConvertTo-Json
 
-          Invoke-RestMethod `
+          $response = Invoke-RestMethod `
             -Uri "http://localhost:8000/api/fitness" `
             -Method POST `
             -ContentType "application/json" `
             -Body $body
 
-      - name: Test health endpoint
+          if ($null -eq $response.message) {
+            Write-Error "Fitness response does not contain a message."
+            exit 1
+          }
+
+          Write-Host "Fitness endpoint passed."
+
+      - name: Test health category endpoint
         shell: powershell
         run: |
           $body = @{
             message = "How much sleep should I get?"
           } | ConvertTo-Json
 
-          Invoke-RestMethod `
+          $response = Invoke-RestMethod `
             -Uri "http://localhost:8000/api/health" `
             -Method POST `
             -ContentType "application/json" `
             -Body $body
+
+          if ($null -eq $response.message) {
+            Write-Error "Health response does not contain a message."
+            exit 1
+          }
+
+          Write-Host "Health category endpoint passed."
 
       - name: Test diet endpoint
         shell: powershell
@@ -239,11 +291,18 @@ jobs:
             message = "What should I eat?"
           } | ConvertTo-Json
 
-          Invoke-RestMethod `
+          $response = Invoke-RestMethod `
             -Uri "http://localhost:8000/api/diet" `
             -Method POST `
             -ContentType "application/json" `
             -Body $body
+
+          if ($null -eq $response.message) {
+            Write-Error "Diet response does not contain a message."
+            exit 1
+          }
+
+          Write-Host "Diet endpoint passed."
 
       - name: Test food endpoint
         shell: powershell
@@ -252,24 +311,40 @@ jobs:
             message = "How many calories are in chicken?"
           } | ConvertTo-Json
 
-          Invoke-RestMethod `
+          $response = Invoke-RestMethod `
             -Uri "http://localhost:8000/api/food" `
             -Method POST `
             -ContentType "application/json" `
             -Body $body
 
+          if ($null -eq $response.message) {
+            Write-Error "Food response does not contain a message."
+            exit 1
+          }
+
+          Write-Host "Food endpoint passed."
+
       - name: Test knowledge statistics
         shell: powershell
         run: |
-          Invoke-WebRequest `
+          $response = Invoke-RestMethod `
             -Uri "http://localhost:8000/api/knowledge/stats" `
-            -UseBasicParsing
+            -Method GET
+
+          if ($response.success -ne $true) {
+            Write-Error "Knowledge statistics endpoint failed."
+            exit 1
+          }
+
+          Write-Host "Knowledge statistics endpoint passed."
 
       - name: Show Docker logs
         if: always()
         shell: powershell
         run: |
+          Write-Host "========== DOCKER LOGS =========="
           docker logs movewise-chatbot
+          Write-Host "========== END DOCKER LOGS =========="
 
       - name: Stop Docker container
         if: always()
@@ -278,6 +353,9 @@ jobs:
           docker stop movewise-chatbot 2>$null
           docker rm movewise-chatbot 2>$null
 
+# ============================================================
+# 4. AUTOMATIC PRODUCTION DEPLOYMENT
+# ============================================================
 
   deploy:
     name: Auto Deploy
@@ -307,13 +385,24 @@ jobs:
 
           Write-Host "Starting MoveWise Chatbot deployment..."
 
-          Invoke-WebRequest `
+          $response = Invoke-WebRequest `
             -Uri $env:RENDER_DEPLOY_HOOK `
             -Method POST `
             -UseBasicParsing
 
+          Write-Host "Deployment hook response:"
+          Write-Host $response.StatusCode
+
+          if ($response.StatusCode -lt 200 -or $response.StatusCode -ge 300) {
+            Write-Error "Deployment hook failed."
+            exit 1
+          }
+
           Write-Host "Deployment triggered successfully."
 
+# ============================================================
+# 5. PRODUCTION SMOKE TEST
+# ============================================================
 
   smoke-test:
     name: Production Smoke Test
@@ -342,33 +431,60 @@ jobs:
             exit 1
           }
 
-          Invoke-WebRequest `
-            -Uri "$($env:PRODUCTION_URL)/health" `
+          $baseUrl = $env:PRODUCTION_URL.TrimEnd('/')
+
+          $response = Invoke-WebRequest `
+            -Uri "$baseUrl/health" `
             -UseBasicParsing
+
+          if ($response.StatusCode -ne 200) {
+            Write-Error "Production health check failed."
+            exit 1
+          }
+
+          Write-Host "Production health check passed."
 
       - name: Production greeting test
         shell: powershell
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
-          Invoke-WebRequest `
-            -Uri "$($env:PRODUCTION_URL)/api/greeting" `
+          $baseUrl = $env:PRODUCTION_URL.TrimEnd('/')
+
+          $response = Invoke-WebRequest `
+            -Uri "$baseUrl/api/greeting" `
             -UseBasicParsing
+
+          if ($response.StatusCode -ne 200) {
+            Write-Error "Production greeting test failed."
+            exit 1
+          }
+
+          Write-Host "Production greeting test passed."
 
       - name: Production chatbot test
         shell: powershell
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
+          $baseUrl = $env:PRODUCTION_URL.TrimEnd('/')
+
           $body = @{
             message = "What is a good beginner workout?"
           } | ConvertTo-Json
 
-          Invoke-RestMethod `
-            -Uri "$($env:PRODUCTION_URL)/api/chat" `
+          $response = Invoke-RestMethod `
+            -Uri "$baseUrl/api/chat" `
             -Method POST `
             -ContentType "application/json" `
             -Body $body
+
+          if ($null -eq $response.message) {
+            Write-Error "Production chatbot response does not contain a message."
+            exit 1
+          }
+
+          Write-Host "Production chatbot test passed."
 
       - name: Deployment successful
         shell: powershell
