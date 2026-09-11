@@ -31,7 +31,7 @@ jobs:
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           if (-not (Test-Path $env:PYTHON_EXE)) {
-            throw "Python 3.14 not found at $env:PYTHON_EXE"
+            throw "Python 3.14 not found."
           }
 
           $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
@@ -42,10 +42,6 @@ jobs:
 
           & $env:PYTHON_EXE -m venv $venv
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to create virtual environment."
-          }
-
       - name: Install dependencies
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
@@ -53,94 +49,27 @@ jobs:
 
           & $python -m pip install --upgrade pip
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to upgrade pip."
-          }
-
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to install backend dependencies."
-          }
-
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to install development dependencies."
-          }
-
-      - name: Verify test environment
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
-
-          Set-Location $env:GITHUB_WORKSPACE
-
-          Write-Host "========================================"
-          Write-Host "Python version"
-          Write-Host "========================================"
-
-          & $python --version
-
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "Pytest version"
-          Write-Host "========================================"
-
-          & $python -m pytest --version
-
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "Working directory"
-          Write-Host "========================================"
-
-          Get-Location
 
       - name: Run tests
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
-          Set-Location $env:GITHUB_WORKSPACE
-
-          # Prevent OpenBLAS from allocating excessive memory
-          $env:OPENBLAS_NUM_THREADS = "1"
-          $env:OMP_NUM_THREADS = "1"
-          $env:MKL_NUM_THREADS = "1"
-          $env:NUMEXPR_NUM_THREADS = "1"
-
-          Write-Host "========================================"
-          Write-Host "RUNNING PYTEST"
-          Write-Host "========================================"
-
           & $python -m pytest `
             -v `
-            --tb=long `
-            --capture=no `
             --cov=backend_chatbot `
             --cov-report=term `
             --cov-report=xml:coverage.xml
 
-          $exitCode = $LASTEXITCODE
-
-          Write-Host ""
-          Write-Host "Pytest exit code: $exitCode"
-
-          if ($exitCode -ne 0) {
-            Write-Host ""
-            Write-Host "========================================"
-            Write-Host "PYTEST FAILED"
-            Write-Host "========================================"
-
-            exit $exitCode
+          if ($LASTEXITCODE -ne 0) {
+            throw "Tests failed."
           }
 
-          Write-Host ""
-          Write-Host "========================================"
-          Write-Host "ALL TESTS PASSED"
-          Write-Host "========================================"
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -183,31 +112,15 @@ jobs:
 
           & $env:PYTHON_EXE -m venv $venv
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to create QA virtual environment."
-          }
-
           $python = Join-Path $venv "Scripts\python.exe"
 
           & $python -m pip install --upgrade pip
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to upgrade pip."
-          }
-
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to install backend dependencies."
-          }
-
           & $python -m pip install `
             -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Failed to install QA dependencies."
-          }
 
       - name: Security scan
         shell: powershell -ExecutionPolicy Bypass -File {0}
@@ -249,7 +162,6 @@ jobs:
           if (Test-Path $venv) {
             Remove-Item $venv -Recurse -Force
           }
-
 
   # ==========================================================
   # 3. DOCKER BUILD + TEST
