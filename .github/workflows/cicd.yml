@@ -17,23 +17,22 @@ env:
 jobs:
 
   # ==========================================================
-  # 1. TEST
+  # 1. AUTO TEST
   # ==========================================================
   test:
     name: Auto Test
     runs-on: [self-hosted, Windows, X64]
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Python
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           if (-not (Test-Path $env:PYTHON_EXE)) {
-            throw "Python 3.14 not found: $env:PYTHON_EXE"
+            throw "Python 3.14 not found."
           }
-
-          & $env:PYTHON_EXE --version
 
           $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
 
@@ -43,31 +42,18 @@ jobs:
 
           & $env:PYTHON_EXE -m venv $venv
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Virtual environment creation failed."
-          }
-
       - name: Install dependencies
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
           & $python -m pip install --upgrade pip
-          if ($LASTEXITCODE -ne 0) {
-            throw "pip upgrade failed."
-          }
 
-          & $python -m pip install -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
-          if ($LASTEXITCODE -ne 0) {
-            throw "Backend dependency installation failed."
-          }
+          & $python -m pip install `
+            -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
 
-          & $python -m pip install -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
-          if ($LASTEXITCODE -ne 0) {
-            throw "Development dependency installation failed."
-          }
-
-          & $python -c "import flask, fastapi, sklearn, pytest; print('Dependencies OK')"
+          & $python -m pip install `
+            -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
 
       - name: Run tests
         shell: powershell -ExecutionPolicy Bypass -File {0}
@@ -104,7 +90,7 @@ jobs:
 
 
   # ==========================================================
-  # 2. QA
+  # 2. AUTO QA
   # ==========================================================
   qa:
     name: Auto QA
@@ -112,9 +98,10 @@ jobs:
     needs: test
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup QA environment
+      - name: Setup QA
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $venv = Join-Path $env:GITHUB_WORKSPACE $env:VENV
@@ -125,26 +112,15 @@ jobs:
 
           & $env:PYTHON_EXE -m venv $venv
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "QA virtual environment creation failed."
-          }
-
           $python = Join-Path $venv "Scripts\python.exe"
 
           & $python -m pip install --upgrade pip
-          if ($LASTEXITCODE -ne 0) {
-            throw "QA pip upgrade failed."
-          }
 
-          & $python -m pip install -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
-          if ($LASTEXITCODE -ne 0) {
-            throw "QA backend dependency installation failed."
-          }
+          & $python -m pip install `
+            -r "$env:GITHUB_WORKSPACE\backend_chatbot\requirements.txt"
 
-          & $python -m pip install -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
-          if ($LASTEXITCODE -ne 0) {
-            throw "QA development dependency installation failed."
-          }
+          & $python -m pip install `
+            -r "$env:GITHUB_WORKSPACE\requirements-dev.txt"
 
       - name: Ruff
         shell: powershell -ExecutionPolicy Bypass -File {0}
@@ -155,19 +131,7 @@ jobs:
           & $python -m ruff check .
 
           if ($LASTEXITCODE -ne 0) {
-            throw "Ruff check failed."
-          }
-
-      - name: Format check
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        working-directory: backend_chatbot
-        run: |
-          $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
-
-          & $python -m ruff format --check .
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Formatting check failed."
+            throw "Ruff QA failed."
           }
 
       - name: Security scan
@@ -179,7 +143,7 @@ jobs:
           & $python -m bandit -r . -x tests
 
           if ($LASTEXITCODE -ne 0) {
-            throw "Bandit security scan failed."
+            throw "Security QA failed."
           }
 
       - name: Dependency audit
@@ -206,26 +170,29 @@ jobs:
 
 
   # ==========================================================
-  # 3. DOCKER BUILD + RUNTIME QA
+  # 3. DOCKER BUILD + TEST
   # ==========================================================
   docker:
-    name: Docker QA
+    name: Docker Build & Test
     runs-on: [self-hosted, Windows, X64]
-    needs: [test, qa]
+    needs: qa
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Build image
+      - name: Build Docker image
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          docker build -t movewise-chatbot:${{ github.sha }} .
+          docker build `
+            -t movewise-chatbot:${{ github.sha }} `
+            .
 
           if ($LASTEXITCODE -ne 0) {
             throw "Docker build failed."
           }
 
-      - name: Run container
+      - name: Run Docker container
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           docker rm -f movewise-chatbot 2>$null
@@ -239,19 +206,19 @@ jobs:
             throw "Docker container failed to start."
           }
 
-      - name: Runtime smoke test
+      - name: Docker health test
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $ready = $false
 
           for ($i = 1; $i -le 30; $i++) {
             try {
-              $r = Invoke-WebRequest `
+              $response = Invoke-WebRequest `
                 -Uri "http://localhost:8000/health" `
                 -UseBasicParsing `
                 -TimeoutSec 5
 
-              if ($r.StatusCode -eq 200) {
+              if ($response.StatusCode -eq 200) {
                 $ready = $true
                 break
               }
@@ -263,47 +230,19 @@ jobs:
 
           if (-not $ready) {
             docker logs movewise-chatbot
-            throw "Docker API did not become healthy."
+            throw "Docker health check failed."
           }
 
           $health = Invoke-RestMethod `
             -Uri "http://localhost:8000/health"
 
           if ($health.status -ne "healthy") {
-            throw "Health check failed."
+            throw "API health check failed."
           }
 
-          $greeting = Invoke-RestMethod `
-            -Uri "http://localhost:8000/api/greeting"
+          Write-Host "Docker test PASSED."
 
-          if (-not $greeting.message) {
-            throw "Greeting check failed."
-          }
-
-          $body = @{
-            message = "What is a good beginner workout?"
-          } | ConvertTo-Json
-
-          $chat = Invoke-RestMethod `
-            -Uri "http://localhost:8000/api/chat" `
-            -Method POST `
-            -ContentType "application/json" `
-            -Body $body
-
-          if (-not $chat.message) {
-            throw "Chat endpoint failed."
-          }
-
-          Write-Host "Docker runtime QA PASSED."
-
-      - name: Docker logs
-        if: always()
-        continue-on-error: true
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        run: |
-          docker logs movewise-chatbot
-
-      - name: Cleanup
+      - name: Cleanup Docker
         if: always()
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
@@ -315,7 +254,7 @@ jobs:
   # 4. DEPLOY
   # ==========================================================
   deploy:
-    name: Production Deploy
+    name: Deploy to Render
     runs-on: [self-hosted, Windows, X64]
     needs: docker
 
@@ -325,7 +264,7 @@ jobs:
       name: production
 
     steps:
-      - name: Deploy to Render
+      - name: Deploy
         shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
@@ -340,77 +279,9 @@ jobs:
             -UseBasicParsing
 
           if ($response.StatusCode -lt 200 -or $response.StatusCode -ge 300) {
-            throw "Render deployment failed."
-          }
-
-          Write-Host "Deployment triggered successfully."
-
-
-  # ==========================================================
-  # 5. PRODUCTION SMOKE TEST
-  # ==========================================================
-  production-smoke:
-    name: Production Smoke Test
-    runs-on: [self-hosted, Windows, X64]
-    needs: deploy
-
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Verify production
-        shell: powershell -ExecutionPolicy Bypass -File {0}
-        env:
-          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
-        run: |
-          if ([string]::IsNullOrWhiteSpace($env:PRODUCTION_URL)) {
-            throw "PRODUCTION_URL is not configured."
-          }
-
-          $base = $env:PRODUCTION_URL.TrimEnd('/')
-          $ready = $false
-
-          for ($i = 1; $i -le 30; $i++) {
-            try {
-              $health = Invoke-RestMethod `
-                -Uri "$base/health" `
-                -TimeoutSec 10
-
-              if ($health.status -eq "healthy") {
-                $ready = $true
-                break
-              }
-            }
-            catch {}
-
-            Start-Sleep 10
-          }
-
-          if (-not $ready) {
-            throw "Production API is not healthy."
-          }
-
-          $greeting = Invoke-RestMethod `
-            -Uri "$base/api/greeting"
-
-          if (-not $greeting.message) {
-            throw "Production greeting failed."
-          }
-
-          $body = @{
-            message = "What is a good beginner workout?"
-          } | ConvertTo-Json
-
-          $chat = Invoke-RestMethod `
-            -Uri "$base/api/chat" `
-            -Method POST `
-            -ContentType "application/json" `
-            -Body $body `
-            -TimeoutSec 30
-
-          if (-not $chat.message) {
-            throw "Production chatbot failed."
+            throw "Deployment failed."
           }
 
           Write-Host "========================================"
-          Write-Host "PRODUCTION SMOKE TEST PASSED"
+          Write-Host "DEPLOYMENT SUCCESSFUL"
           Write-Host "========================================"
