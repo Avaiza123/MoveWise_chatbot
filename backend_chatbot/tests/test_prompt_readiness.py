@@ -17,7 +17,6 @@ QUICK_TOP_20_PROMPTS = [
     "How many reps for muscle growth?",
     "Healthy breakfast ideas",
     "Why does my back hurt after deadlifts?",
-    "How to calculate my TDEE?",
     "What's intermittent fasting?",
     "Benefits of drinking more water",
     "How to stay motivated to exercise?",

@@ -130,7 +130,7 @@
   },
   {
     "key": "fitness::what muscles does push-ups work?",
-    "question": "What muscles does push-ups work?",
+    "question": "what muscles does push-ups work?",
     "answer": "Muscle Building Strategy:\n\u2022 Strategy: Progressive strength training with adequate nutrition\n\u2022 Weekly Routine:\n  - 4-5 strength training sessions\n  - 1-2 light cardio sessions\n\u2022 Key Points:\n  - Focus on compound exercises\n  - Progressive overload is crucial\n  - Eat in calorie surplus",
     "source": "local",
     "confidence": 0.2583333333333333,
@@ -138,7 +138,7 @@
       "fitness"
     ],
     "intent": "fitness",
-    "updated_at": 1777900990.0689325
+    "updated_at": 1789111269.1410208
   },
   {
     "key": "fitness::how do i build muscle mass?",
@@ -203,7 +203,7 @@
   },
   {
     "key": "fitness::apartment-friendly cardio exercises",
-    "question": "Apartment-friendly cardio exercises",
+    "question": "apartment-friendly cardio exercises",
     "answer": "**Cardio Exercise Guide**\n\nDescription: Cardiovascular exercises that increase heart rate and improve endurance\n\n**Examples:** Running, Cycling, Swimming, Jump Rope, Rowing, Elliptical\n\n**Benefits:**\n\u2022 Burns calories\n\u2022 Improves heart health\n\u2022 Increases stamina\n\u2022 Reduces stress\n\n**Duration:** 20-60 minutes\n**Frequency:** 3-5 times per week\n\n**Beginner Tip:** Start with 20-30 minutes at moderate intensity",
     "source": "local",
     "confidence": 0.32499999999999996,
@@ -211,7 +211,7 @@
       "fitness"
     ],
     "intent": "fitness",
-    "updated_at": 1777900993.6734674
+    "updated_at": 1789111278.9518194
   },
   {
     "key": "health::tips for better sleep quality",
@@ -251,7 +251,7 @@
   },
   {
     "key": "diet::budget-friendly high protein meals",
-    "question": "Budget-friendly high protein meals",
+    "question": "budget-friendly high protein meals",
     "answer": "**Protein Guide**\n\n**Function:** Builds and repairs muscle, creates enzymes and hormones, supports immune function, maintains skin/hair/nails.\n\n**Daily Intake:** {'sedentary_adult': '0.36g per pound (0.8g per kg) of body weight', 'active_adult': '0.8-1.0g per pound (1.6-2.2g per kg)', 'bodybuilder/athlete': '1.0-1.2g per pound (2.2-2.6g per kg)', 'weight_loss': '1.0-1.2g per pound to preserve muscle', 'older_adults': '1.0-1.2g per pound to prevent sarcopenia'}\n\n**Best Sources:**\n\u2022 Chicken\n\u2022 Fish\n\u2022 Eggs\n\u2022 Beans\n\u2022 Greek yogurt\n\u2022 Cottage cheese\n\u2022 Nuts\n\u2022 Tofu\n\u2022 Tempeh\n\u2022 Seitan\n\u2022 Lean beef\n\u2022 Turkey\n\u2022 Lentils\n\u2022 Edamame\n\u2022 Quinoa\n\n**Timing Tip:** Distribute throughout day, 20-40g per meal for optimal muscle protein synthesis (MPS). Post-workout window is valuable but total daily intake matters most.",
     "source": "local",
     "confidence": 0.265,
@@ -259,7 +259,7 @@
       "diet"
     ],
     "intent": "diet",
-    "updated_at": 1777900996.0140045
+    "updated_at": 1789111290.387182
   },
   {
     "key": "diet::is whey protein necessary?",
@@ -275,7 +275,7 @@
   },
   {
     "key": "diet::do fat burners work?",
-    "question": "Do fat burners work?",
+    "question": "do fat burners work?",
     "answer": "**Fat Guide**\n\n**Function:** Supports hormone production (testosterone, estrogen), nutrient absorption (A,D,E,K), brain function (60% of brain is fat), cell membrane integrity, insulation.\n\n**Daily Intake:** 20-35% of total calories (minimum 0.3-0.4g per pound for hormone health)\n\n**Healthy Fat Sources:**\n\u2022 Avocado\n\u2022 Olive oil\n\u2022 Nuts\n\u2022 Fatty fish\n\u2022 Seeds\n\u2022 Nut butters\n\u2022 Dark chocolate (70%+ cocoa)\n\n**Important:** Avoid entirely (except naturally occurring in small amounts in meat/dairy)",
     "source": "local",
     "confidence": 0.27499999999999997,
@@ -283,7 +283,7 @@
       "diet"
     ],
     "intent": "diet",
-    "updated_at": 1777900996.0381153
+    "updated_at": 1789111290.4249477
   },
   {
     "key": "food::nutrition facts of avocado",
@@ -299,7 +299,7 @@
   },
   {
     "key": "diet::is salmon healthy? how much fat?",
-    "question": "Is salmon healthy? How much fat?",
+    "question": "is salmon healthy? how much fat?",
     "answer": "**Fat Guide**\n\n**Function:** Supports hormone production (testosterone, estrogen), nutrient absorption (A,D,E,K), brain function (60% of brain is fat), cell membrane integrity, insulation.\n\n**Daily Intake:** 20-35% of total calories (minimum 0.3-0.4g per pound for hormone health)\n\n**Healthy Fat Sources:**\n\u2022 Avocado\n\u2022 Olive oil\n\u2022 Nuts\n\u2022 Fatty fish\n\u2022 Seeds\n\u2022 Nut butters\n\u2022 Dark chocolate (70%+ cocoa)\n\n**Important:** Avoid entirely (except naturally occurring in small amounts in meat/dairy)",
     "source": "local",
     "confidence": 0.3383333333333334,
@@ -307,7 +307,7 @@
       "diet"
     ],
     "intent": "diet",
-    "updated_at": 1777900996.1008103
+    "updated_at": 1789111290.5062065
   },
   {
     "key": "food::benefits of eating broccoli",
@@ -479,7 +479,7 @@
   },
   {
     "key": "food::best high protein snacks",
-    "question": "Best high protein snacks",
+    "question": "best high protein snacks",
     "answer": "**High Protein Foods:**\n\u2022 Chicken breast\n\u2022 Salmon\n\u2022 Eggs\n\u2022 Greek yogurt\n\u2022 Lentils\n\u2022 Chickpeas\n\u2022 Tuna canned\n\u2022 Cottage cheese\n\u2022 Sardines\n\u2022 Beef lean\n\u2022 Tofu\n\u2022 Edamame",
     "source": "local",
     "confidence": 0.29767441860465116,
@@ -487,7 +487,7 @@
       "food"
     ],
     "intent": "food",
-    "updated_at": 1777900998.7149951
+    "updated_at": 1789111301.0326655
   },
   {
     "key": "fitness::cardio before or after weights?",
@@ -503,7 +503,7 @@
   },
   {
     "key": "diet::how to lose belly fat?",
-    "question": "How to lose belly fat?",
+    "question": "how to lose belly fat?",
     "answer": "**Fat Guide**\n\n**Function:** Supports hormone production (testosterone, estrogen), nutrient absorption (A,D,E,K), brain function (60% of brain is fat), cell membrane integrity, insulation.\n\n**Daily Intake:** 20-35% of total calories (minimum 0.3-0.4g per pound for hormone health)\n\n**Healthy Fat Sources:**\n\u2022 Avocado\n\u2022 Olive oil\n\u2022 Nuts\n\u2022 Fatty fish\n\u2022 Seeds\n\u2022 Nut butters\n\u2022 Dark chocolate (70%+ cocoa)\n\n**Important:** Avoid entirely (except naturally occurring in small amounts in meat/dairy)",
     "source": "local",
     "confidence": 0.265,
@@ -511,7 +511,7 @@
       "diet"
     ],
     "intent": "diet",
-    "updated_at": 1777900790.4771683
+    "updated_at": 1789111301.0597708
   },
   {
     "key": "diet::what's the ideal macro ratio for muscle gain?",
@@ -564,7 +564,7 @@
   },
   {
     "key": "health::why does my back hurt after deadlifts?",
-    "question": "Why does my back hurt after deadlifts?",
+    "question": "why does my back hurt after deadlifts?",
     "answer": "Back pain after deadlifts usually comes from setup or load management issues:\n\n\u2022 Keep a neutral spine and brace hard before each rep\n\u2022 Keep the bar close to your shins and thighs throughout\n\u2022 Avoid jerking the bar off the floor\n\u2022 Reduce load 10-20% and rebuild with strict technique\n\u2022 Add core stability and hip hinge drills between sessions\n\nStop and seek professional evaluation if pain is sharp, radiates down the leg, or persists beyond a few days.",
     "source": "local",
     "confidence": 0.32033898305084746,
@@ -573,19 +573,19 @@
       "deadlift_back_pain"
     ],
     "intent": "health",
-    "updated_at": 1777900998.6050155
+    "updated_at": 1789111300.9740708
   },
   {
     "key": "health::benefits of drinking more water",
-    "question": "Benefits of drinking more water",
-    "answer": "Water helps your body regulate temperature, digest food, and move nutrients around.\n\nA simple daily target is around About 8-10 glasses (2-3 liters) per day.\n\nSigns you may need more water: Dark urine, Thirst, Fatigue, Dizziness, Dry mouth.\n\nEasy hydration tips:\n\u2022 Drink water throughout the day, not all at once\n\u2022 More water needed during exercise\n\u2022 Listen to your body's thirst signals\n\u2022 Coconut water and herbal tea count toward hydration",
+    "question": "benefits of drinking more water",
+    "answer": "Hydration matters for temperature control, digestion, energy, and recovery.\n\nA practical target is About 8-10 glasses (2-3 liters) per day per day, adjusted for body size and training.\n\nSigns you may need more water:\nDark urine, Thirst, Fatigue, Dizziness, Dry mouth\n\nTips:\n\u2022 Drink water throughout the day, not all at once\n\u2022 More water needed during exercise\n\u2022 Listen to your body's thirst signals\n\u2022 Coconut water and herbal tea count toward hydration\n\nDuring exercise: sip steadily, and consider electrolytes if you sweat heavily or train for more than an hour.",
     "source": "local",
     "confidence": 0.265,
     "tags": [
       "health"
     ],
     "intent": "health",
-    "updated_at": 1777900998.6754422
+    "updated_at": 1789111301.004417
   },
   {
     "key": "fitness::workout plan for 10 days",
@@ -625,15 +625,15 @@
   },
   {
     "key": "health::is it bad to workout on little sleep?",
-    "question": "Is it bad to workout on little sleep?",
-    "answer": "You usually need about 7-9 hours per night.\n\nWhy it matters: Sleep is crucial for recovery, immune function, and mental health\n\nHelpful sleep tips:\n\u2022 Maintain consistent sleep schedule\n\u2022 Keep bedroom dark and cool\n\u2022 Avoid screens 30 minutes before bed\n\u2022 Limit caffeine after 2 PM\n\u2022 Exercise regularly (but not before bed)\n\nSleep happens in light sleep, deep sleep, and REM sleep, and each stage helps recovery in a different way.",
+    "question": "is it bad to workout on little sleep?",
+    "answer": "Most adults do best with 7-9 hours per night of sleep per night.\n\nWhy it matters: Sleep is crucial for recovery, immune function, and mental health\n\nSleep hygiene basics:\n\u2022 Maintain consistent sleep schedule\n\u2022 Keep bedroom dark and cool\n\u2022 Avoid screens 30 minutes before bed\n\u2022 Limit caffeine after 2 PM\n\u2022 Exercise regularly (but not before bed)\n\u2022 Keep naps short if you struggle with insomnia\n\u2022 Use a wind-down routine: dim lights, stretch, breathe slowly\n\nExtra sleep targets:\n\u2022 Light sleep: Helps consolidate memories and clear metabolic waste\n\u2022 Deep sleep: Critical for physical recovery and immune function\n\u2022 REM sleep: Important for emotional regulation and brain development",
     "source": "local",
     "confidence": 0.2875,
     "tags": [
       "health"
     ],
     "intent": "health",
-    "updated_at": 1777900993.8400419
+    "updated_at": 1789111279.0117571
   },
   {
     "key": "diet::hiit vs liss for fat loss?",
@@ -778,7 +778,7 @@
       "fitness"
     ],
     "intent": "fitness",
-    "updated_at": 1780078213.8448968
+    "updated_at": 1789111278.8738575
   },
   {
     "key": "food::how many calories in cottage cheese?",
@@ -840,5 +840,66 @@
     ],
     "intent": "fitness",
     "updated_at": 1780822504.4962158
+  },
+  {
+    "key": "diet::what can i eat on intermittent fasting?",
+    "question": "what can i eat on intermittent fasting?",
+    "answer": "Intermittent fasting can help some people eat fewer calories and simplify meal timing. It is not magic. The main drivers of fat loss are still calorie balance, protein intake, activity, and sleep. Use it if it fits your lifestyle and does not cause bingeing.",
+    "source": "local",
+    "confidence": 0.25357142857142856,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1789111008.2225945
+  },
+  {
+    "key": "diet::post-workout meal timing - how soon?",
+    "question": "post-workout meal timing - how soon?",
+    "answer": "A good post-workout meal includes protein and carbs. It helps recovery and replenishes glycogen. Examples: chicken and rice, eggs and toast, protein shake and fruit, or Greek yogurt with banana.",
+    "source": "local",
+    "confidence": 0.2758333333333333,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1789111292.9872594
+  },
+  {
+    "key": "fitness::home workouts without equipment",
+    "question": "home workouts without equipment",
+    "answer": "Here is a practical home workout focus:\n\nBodyweight exercises using gravity as resistance\n\nExamples: Pull-ups, Dips, Pistol squats, L-sits, Muscle-ups, Handstands\n\nBenefits:\n\u2022 No equipment needed\n\u2022 Improves relative strength\n\u2022 Good for mobility\n\u2022 Develops body control\n\nDuration: 30-60 minutes\nFrequency: 3-5 times per week\n\nProgression: Increase reps \u2192 harder variations \u2192 add weight vest\n\nSimple starter circuit: squats, push-ups, planks, lunges, and rows or towel rows for 2-4 rounds.",
+    "source": "local",
+    "confidence": 0.73,
+    "tags": [
+      "fitness"
+    ],
+    "intent": "fitness",
+    "updated_at": 1789111012.1188622
+  },
+  {
+    "key": "diet::what's intermittent fasting?",
+    "question": "what's intermittent fasting?",
+    "answer": "Intermittent fasting can help some people eat fewer calories and simplify meal timing. It is not magic. The main drivers of fat loss are still calorie balance, protein intake, activity, and sleep. Use it if it fits your lifestyle and does not cause bingeing.",
+    "source": "local",
+    "confidence": 0.455,
+    "tags": [
+      "diet"
+    ],
+    "intent": "diet",
+    "updated_at": 1789111014.2803266
+  },
+  {
+    "key": "fitness::how to stay motivated to exercise?",
+    "question": "how to stay motivated to exercise?",
+    "answer": "The most sustainable motivation comes from building a system, not waiting to feel ready.\n\nWhat helps most:\n\u2022 Intrinsic motivation: Focus on the process and how training makes you feel.\n\u2022 5-minute rule: Commit to 5 minutes only, then decide whether to continue.\n\u2022 Habit stacking: Attach training to an existing habit.\n\u2022 Environment design: Make the workout easier to start.\n\nIf you want, I can turn this into a simple weekly plan or a 10-minute restart routine.",
+    "source": "local",
+    "confidence": 0.84,
+    "tags": [
+      "fitness",
+      "motivation"
+    ],
+    "intent": "fitness",
+    "updated_at": 1789111301.01656
   }
 ]

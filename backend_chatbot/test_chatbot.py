@@ -13,7 +13,7 @@ ENDPOINTS = {
     "greeting": "/api/greeting"
 }
 
-test_queries = {
+TEST_QUERIES = {
     "fitness": [
         "What is a good beginner workout?",
         "How do I do a push-up?",
@@ -70,7 +70,7 @@ def test_queries():
     print("Testing Chat Queries")
     print("="*50)
     
-    for category, queries in test_queries.items():
+    for category, queries in TEST_QUERIES.items():
         endpoint = ENDPOINTS.get(category, ENDPOINTS["chat"])
         print(f"\n--- Testing {category.upper()} ---")
         
