@@ -57,15 +57,15 @@ jobs:
 
       - name: Run tests
         shell: powershell -ExecutionPolicy Bypass -File {0}
-        working-directory: backend_chatbot
         run: |
+          $env:PYTHONPATH = "$env:GITHUB_WORKSPACE;$env:GITHUB_WORKSPACE\backend_chatbot"
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
           & $python -m pytest `
             -v `
-            --cov=. `
+            --cov=backend_chatbot `
             --cov-report=term `
-            --cov-report=xml:$env:GITHUB_WORKSPACE\coverage.xml
+            --cov-report=xml:coverage.xml
 
           if ($LASTEXITCODE -ne 0) {
             throw "Tests failed."
