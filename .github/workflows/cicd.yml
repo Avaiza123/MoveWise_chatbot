@@ -60,15 +60,72 @@ jobs:
         run: |
           $python = Join-Path $env:GITHUB_WORKSPACE "$env:VENV\Scripts\python.exe"
 
+          Set-Location $env:GITHUB_WORKSPACE
+
+          # Prevent NumPy / SciPy / OpenBLAS memory issues
+          $env:OPENBLAS_NUM_THREADS = "1"
+          $env:OMP_NUM_THREADS = "1"
+          $env:MKL_NUM_THREADS = "1"
+          $env:NUMEXPR_NUM_THREADS = "1"
+
+          Write-Host "========================================"
+          Write-Host "PYTHON VERSION"
+          Write-Host "========================================"
+
+          & $python --version
+
+          Write-Host ""
+          Write-Host "========================================"
+          Write-Host "COLLECTING TESTS"
+          Write-Host "========================================"
+
+          & $python -m pytest --collect-only -v
+
+          $collectExit = $LASTEXITCODE
+
+          if ($collectExit -ne 0) {
+            Write-Host ""
+            Write-Host "========================================"
+            Write-Host "TEST COLLECTION FAILED"
+            Write-Host "========================================"
+
+            exit $collectExit
+          }
+
+          Write-Host ""
+          Write-Host "Test collection successful."
+
+          Write-Host ""
+          Write-Host "========================================"
+          Write-Host "RUNNING ALL TESTS"
+          Write-Host "========================================"
+
           & $python -m pytest `
             -v `
+            --tb=long `
+            --capture=no `
             --cov=backend_chatbot `
             --cov-report=term `
             --cov-report=xml:coverage.xml
 
-          if ($LASTEXITCODE -ne 0) {
-            throw "Tests failed."
+          $testExit = $LASTEXITCODE
+
+          Write-Host ""
+          Write-Host "Pytest exit code: $testExit"
+
+          if ($testExit -ne 0) {
+            Write-Host ""
+            Write-Host "========================================"
+            Write-Host "PYTEST FAILED"
+            Write-Host "========================================"
+
+            exit $testExit
           }
+
+          Write-Host ""
+          Write-Host "========================================"
+          Write-Host "ALL TESTS PASSED"
+          Write-Host "========================================"
 
       - name: Upload coverage
         if: always()
