@@ -15,8 +15,8 @@ on:
 jobs:
 
   test:
-    name: Auto Test
-    runs-on: ubuntu-latest
+    name: Auto Test 
+    runs-on: [self-hosted, Windows, X64, ubuntu-latest]
 
     steps:
       - name: Checkout repository
