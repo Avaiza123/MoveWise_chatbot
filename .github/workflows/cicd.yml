@@ -15,12 +15,14 @@ on:
 permissions:
   contents: read
 
+env:
+  PYTHON_LAUNCHER: 'C:\Users\avaiza.shahid\AppData\Local\Programs\Python\Launcher\py.exe'
+  PYTHON_VERSION: '3.14'
+
 jobs:
-
-# ============================================================
-# 1. AUTOMATED TESTING
-# ============================================================
-
+  # ------------------------------------------------------------
+  # 1. AUTOMATED TESTING
+  # ------------------------------------------------------------
   test:
     name: Auto Test
     runs-on: [self-hosted, Windows, X64]
@@ -32,21 +34,36 @@ jobs:
       - name: Check Python
         shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          py -3.14 --version
-          py -3.14 -m pip --version
+          Write-Host "Checking Python..."
+
+          if (-not (Test-Path $env:PYTHON_LAUNCHER)) {
+            Write-Error "Python launcher not found at: $env:PYTHON_LAUNCHER"
+            exit 1
+          }
+
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION --version
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION -m pip --version
 
       - name: Install dependencies
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          py -3.14 -m pip install --upgrade pip
-          py -3.14 -m pip install -r backend_chatbot/requirements.txt
-          py -3.14 -m pip install -r requirements-dev.txt
+          Write-Host "Installing application dependencies..."
+
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION -m pip install --upgrade pip
+
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION -m pip install `
+            -r backend_chatbot/requirements.txt
+
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION -m pip install `
+            -r requirements-dev.txt
 
       - name: Run tests with coverage
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
-          py -3.14 -m pytest `
+          Write-Host "Running automated tests..."
+
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION -m pytest `
             -v `
             --cov=. `
             --cov-report=term `
@@ -60,10 +77,9 @@ jobs:
           path: backend_chatbot/coverage.xml
           if-no-files-found: ignore
 
-# ============================================================
-# 2. AUTOMATED QA
-# ============================================================
-
+  # ------------------------------------------------------------
+  # 2. AUTOMATED QA
+  # ------------------------------------------------------------
   qa:
     name: Auto QA
     runs-on: [self-hosted, Windows, X64]
@@ -75,53 +91,75 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check Python
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          py -3.14 --version
-          py -3.14 -m pip --version
+          Write-Host "Checking Python..."
+
+          if (-not (Test-Path $env:PYTHON_LAUNCHER)) {
+            Write-Error "Python launcher not found at: $env:PYTHON_LAUNCHER"
+            exit 1
+          }
+
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION --version
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION -m pip --version
 
       - name: Install dependencies
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
-          py -3.14 -m pip install --upgrade pip
-          py -3.14 -m pip install -r backend_chatbot/requirements.txt
-          py -3.14 -m pip install -r requirements-dev.txt
+          Write-Host "Installing application and QA dependencies..."
+
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION -m pip install --upgrade pip
+
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION -m pip install `
+            -r backend_chatbot/requirements.txt
+
+          & $env:PYTHON_LAUNCHER -$env:PYTHON_VERSION -m pip install `
+            -r requirements-dev.txt
 
       - name: Verify QA tools
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
+          Write-Host "Checking QA tools..."
+
           ruff --version
           bandit --version
           pip-audit --version
 
       - name: Ruff lint
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
+          Write-Host "Running Ruff lint..."
+
           ruff check .
 
       - name: Ruff format check
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
+          Write-Host "Checking code formatting..."
+
           ruff format --check .
 
       - name: Security scan
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
+          Write-Host "Running Bandit security scan..."
+
           bandit -r . -x tests
 
       - name: Dependency security audit
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         working-directory: backend_chatbot
         run: |
+          Write-Host "Running dependency security audit..."
+
           pip-audit -r requirements.txt
 
-# ============================================================
-# 3. DOCKER BUILD + CONTAINER QA
-# ============================================================
-
+  # ------------------------------------------------------------
+  # 3. DOCKER BUILD + CONTAINER QA
+  # ------------------------------------------------------------
   build:
     name: Build Docker
     runs-on: [self-hosted, Windows, X64]
@@ -134,38 +172,46 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check Docker
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
+          Write-Host "Checking Docker..."
+
           docker --version
           docker info
 
       - name: Remove old container if present
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           docker rm -f movewise-chatbot 2>$null
 
       - name: Build Docker image
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
+          Write-Host "Building Docker image..."
+
           docker build `
             -t movewise-chatbot:${{ github.sha }} `
             .
 
       - name: Verify Docker image
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
+          Write-Host "Verifying Docker image..."
+
           docker image inspect movewise-chatbot:${{ github.sha }}
 
       - name: Start Docker container
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
+          Write-Host "Starting Docker container..."
+
           docker run -d `
             --name movewise-chatbot `
             -p 8000:8000 `
             movewise-chatbot:${{ github.sha }}
 
       - name: Wait for API
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           Write-Host "Waiting for MoveWise API..."
 
@@ -199,33 +245,35 @@ jobs:
           }
 
       - name: Test health endpoint
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $response = Invoke-WebRequest `
             -Uri "http://localhost:8000/health" `
             -UseBasicParsing
 
           if ($response.StatusCode -ne 200) {
+            Write-Error "Health endpoint failed."
             exit 1
           }
 
           Write-Host "Health endpoint passed."
 
       - name: Test greeting endpoint
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $response = Invoke-WebRequest `
             -Uri "http://localhost:8000/api/greeting" `
             -UseBasicParsing
 
           if ($response.StatusCode -ne 200) {
+            Write-Error "Greeting endpoint failed."
             exit 1
           }
 
           Write-Host "Greeting endpoint passed."
 
       - name: Test chatbot endpoint
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $body = @{
             message = "What is a good beginner workout?"
@@ -245,7 +293,7 @@ jobs:
           Write-Host "Chatbot endpoint passed."
 
       - name: Test fitness endpoint
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $body = @{
             message = "What exercise should I do?"
@@ -265,7 +313,7 @@ jobs:
           Write-Host "Fitness endpoint passed."
 
       - name: Test health category endpoint
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $body = @{
             message = "How much sleep should I get?"
@@ -285,7 +333,7 @@ jobs:
           Write-Host "Health category endpoint passed."
 
       - name: Test diet endpoint
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $body = @{
             message = "What should I eat?"
@@ -305,7 +353,7 @@ jobs:
           Write-Host "Diet endpoint passed."
 
       - name: Test food endpoint
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $body = @{
             message = "How many calories are in chicken?"
@@ -325,7 +373,7 @@ jobs:
           Write-Host "Food endpoint passed."
 
       - name: Test knowledge statistics
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           $response = Invoke-RestMethod `
             -Uri "http://localhost:8000/api/knowledge/stats" `
@@ -340,7 +388,7 @@ jobs:
 
       - name: Show Docker logs
         if: always()
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           Write-Host "========== DOCKER LOGS =========="
           docker logs movewise-chatbot
@@ -348,15 +396,14 @@ jobs:
 
       - name: Stop Docker container
         if: always()
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           docker stop movewise-chatbot 2>$null
           docker rm movewise-chatbot 2>$null
 
-# ============================================================
-# 4. AUTOMATIC PRODUCTION DEPLOYMENT
-# ============================================================
-
+  # ------------------------------------------------------------
+  # 4. AUTOMATIC PRODUCTION DEPLOYMENT
+  # ------------------------------------------------------------
   deploy:
     name: Auto Deploy
     runs-on: [self-hosted, Windows, X64]
@@ -374,7 +421,7 @@ jobs:
 
     steps:
       - name: Deploy application
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
@@ -400,10 +447,9 @@ jobs:
 
           Write-Host "Deployment triggered successfully."
 
-# ============================================================
-# 5. PRODUCTION SMOKE TEST
-# ============================================================
-
+  # ------------------------------------------------------------
+  # 5. PRODUCTION SMOKE TEST
+  # ------------------------------------------------------------
   smoke-test:
     name: Production Smoke Test
     runs-on: [self-hosted, Windows, X64]
@@ -416,13 +462,13 @@ jobs:
 
     steps:
       - name: Wait for deployment
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           Write-Host "Waiting for production deployment..."
           Start-Sleep -Seconds 30
 
       - name: Production health check
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
@@ -445,10 +491,15 @@ jobs:
           Write-Host "Production health check passed."
 
       - name: Production greeting test
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
+          if ([string]::IsNullOrWhiteSpace($env:PRODUCTION_URL)) {
+            Write-Error "PRODUCTION_URL secret is not configured."
+            exit 1
+          }
+
           $baseUrl = $env:PRODUCTION_URL.TrimEnd('/')
 
           $response = Invoke-WebRequest `
@@ -463,10 +514,15 @@ jobs:
           Write-Host "Production greeting test passed."
 
       - name: Production chatbot test
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         env:
           PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
         run: |
+          if ([string]::IsNullOrWhiteSpace($env:PRODUCTION_URL)) {
+            Write-Error "PRODUCTION_URL secret is not configured."
+            exit 1
+          }
+
           $baseUrl = $env:PRODUCTION_URL.TrimEnd('/')
 
           $body = @{
@@ -487,7 +543,7 @@ jobs:
           Write-Host "Production chatbot test passed."
 
       - name: Deployment successful
-        shell: powershell
+        shell: powershell -ExecutionPolicy Bypass -File {0}
         run: |
           Write-Host "======================================"
           Write-Host "MoveWise deployment successful!"
